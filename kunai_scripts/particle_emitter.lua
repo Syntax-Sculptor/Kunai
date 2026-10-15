@@ -255,14 +255,23 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     newVelocity = KunaiUtils:ResizeVector3(newVelocity, velocityOverLifetime.SpeedModifier)
 
     -- Orbital Velocity Logic
-    local center = KunaiUtils:AddVector3(
-        particle.SpawnPosition,
-        velocityOverLifetime.OrbitalOffset
-    )
 
-    local rotatedX = particle.Position.X - center.X
-    local rotatedY = particle.Position.Y - center.Y
-    local rotatedZ = particle.Position.Z - center.Z
+    local orbitalOffset = velocityOverLifetime.OrbitalOffset
+
+    if velocityOverLifetime.Space == "Local" then
+        orbitalOffset = KunaiUtils:RotateVector3(orbitalOffset, self.Rotation)    
+    end
+
+    local center = KunaiUtils:AddVector3(particle.SpawnPosition, orbitalOffset)
+    local relativePos = KunaiUtils:SubtractVector3(particle.Position, center)
+
+    if velocityOverLifetime.Space == "Local" then
+        relativePos = KunaiUtils:RotateVector3(relativePos, -self.Rotation)
+    end
+    
+    local rotatedX = relativePos.X
+    local rotatedY = relativePos.Y
+    local rotatedZ = relativePos.Z
 
     -- Orbital X: Rotate in the YZ plane.
     local orbitalX = math.rad(velocityOverLifetime.OrbitalVelocity.X * velocityOverLifetime.SpeedModifier)
@@ -300,9 +309,19 @@ function ParticleEmitter:_GetParticleVelocity(particle)
             rotatedX * sinZ + rotatedY * cosZ
     end
 
-    local newX = center.X + rotatedX
-    local newY = center.Y + rotatedY
-    local newZ = center.Z + rotatedZ
+    local rotatedPosition = {
+        X = rotatedX,
+        Y = rotatedY,
+        Z = rotatedZ
+    }
+
+    if velocityOverLifetime.Space == "Local" then
+        rotatedPosition = KunaiUtils:RotateVector3(rotatedPosition, self.Rotation)
+    end
+
+    local newX = center.X + rotatedPosition.X
+    local newY = center.Y + rotatedPosition.Y
+    local newZ = center.Z + rotatedPosition.Z
 
     local orbitalVelocity = {
         X = newX - particle.Position.X,
