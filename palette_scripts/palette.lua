@@ -30,6 +30,17 @@ local function unregisterEmitter(emitter)
     end
 end
 
+local function destroyNonPersistentEmitters()
+    -- We loop through the emitters backwards since calling :Destroy() on one will cause the 
+    -- `emitters` table to shift due to a call to `table.remove`.
+    for i = #emitters, 0, -1 do
+        local emitter = emitters[i]
+        if not emitter.PersistAcrossRooms then
+            emitter:Destroy()
+        end
+    end
+end
+
 --- Initializes Palette using the provided `mod`. Errors if Palette has already been registered.
 ---@param mod ModReference
 function Palette:Init(mod)
@@ -39,6 +50,8 @@ function Palette:Init(mod)
 
     mod:AddCallback(ModCallbacks.MC_POST_ROOM_RENDER_ENTITIES, onPostRoomRenderEntities)
     mod:AddCallback(ModCallbacks.MC_POST_UPDATE, onPostUpdate)
+    mod:AddCallback(ModCallbacks.MC_PRE_NEW_ROOM, destroyNonPersistentEmitters)
+    mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, destroyNonPersistentEmitters)
 end
 
 --- Creates a new `ParticleEmitter`.
@@ -104,7 +117,8 @@ function Palette:CreateParticleEmitter(texturePath, position)
         StartDirection = {X = 1, Y = 0, Z = 0},
         StartSize = Vector.One,
         StartRotation = 0,
-        
+        PersistAcrossRooms = false,
+
         _IsDestroyed = false,
         _EmissionAccumulator = 0,
         _IsEmitting = true,
