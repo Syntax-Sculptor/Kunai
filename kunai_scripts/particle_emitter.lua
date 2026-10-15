@@ -246,6 +246,7 @@ function ParticleEmitter:_GetParticleVelocity(particle)
         particle.Velocity,
         velocityOverLifetime.LinearVelocity
     )
+    newVelocity = KunaiUtils:ResizeVector3(newVelocity, velocityOverLifetime.SpeedModifier)
 
     -- Orbital Velocity Logic
     local center = KunaiUtils:AddVector3(
@@ -258,7 +259,7 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     local rotatedZ = particle.Position.Z - center.Z
 
     -- Orbital X: Rotate in the YZ plane.
-    local orbitalX = math.rad(velocityOverLifetime.OrbitalVelocity.X * self.VelocityOverLifetime.SpeedModifier)
+    local orbitalX = math.rad(velocityOverLifetime.OrbitalVelocity.X * velocityOverLifetime.SpeedModifier)
 
     if orbitalX ~= 0 then
         local cosX = math.cos(orbitalX)
@@ -270,7 +271,7 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     end
 
     -- Orbital Y: Rotate in the XZ plane.
-    local orbitalY = math.rad(velocityOverLifetime.OrbitalVelocity.Y * self.VelocityOverLifetime.SpeedModifier)
+    local orbitalY = math.rad(velocityOverLifetime.OrbitalVelocity.Y * velocityOverLifetime.SpeedModifier)
 
     if orbitalY ~= 0 then
         local cosY = math.cos(orbitalY)
@@ -282,7 +283,7 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     end
 
     -- Orbital Z: Rotate in the XY plane.
-    local orbitalZ = math.rad(velocityOverLifetime.OrbitalVelocity.Z * self.VelocityOverLifetime.SpeedModifier)
+    local orbitalZ = math.rad(velocityOverLifetime.OrbitalVelocity.Z * velocityOverLifetime.SpeedModifier)
 
     if orbitalZ ~= 0 then
         local cosZ = math.cos(orbitalZ)
@@ -313,14 +314,12 @@ function ParticleEmitter:_GetParticleVelocity(particle)
 
     if length > 0 then
         local radialVelocity = {
-            X = dx / length * velocityOverLifetime.Radial,
-            Y = dy / length * velocityOverLifetime.Radial,
-            Z = dz / length * velocityOverLifetime.Radial,
+            X = dx / length * velocityOverLifetime.Radial * velocityOverLifetime.SpeedModifier,
+            Y = dy / length * velocityOverLifetime.Radial * velocityOverLifetime.SpeedModifier,
+            Z = dz / length * velocityOverLifetime.Radial * velocityOverLifetime.SpeedModifier,
         }
         newVelocity = KunaiUtils:AddVector3(newVelocity, radialVelocity)
     end
-
-    newVelocity = KunaiUtils:ResizeVector3(newVelocity, self.VelocityOverLifetime.SpeedModifier)
 
     return newVelocity
 end
