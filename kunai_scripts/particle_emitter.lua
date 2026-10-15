@@ -35,7 +35,7 @@ end
 --- `ParticlEmitter.MaxParticles`, extraneous particles are not spawned.
 ---@param count integer
 function ParticleEmitter:Emit(count)
-    assert(self._IsDestroyed, "Attempted to Emit particles on a destroyed ParticleEmitter")
+    assert(not self._IsDestroyed, "Attempted to Emit particles on a destroyed ParticleEmitter")
 
     for i = 1, count do
         if #self._Particles >= self.MaxParticles then
