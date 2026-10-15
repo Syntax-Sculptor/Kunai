@@ -1,6 +1,7 @@
 local Kunai = {}
 local ParticleEmitter = include("kunai_scripts.particle_emitter")
 local KunaiGradient = include("kunai_scripts.kunai_gradient")
+local KunaiUtils = include("kunai_scripts.kunai_utils")
 
 local initialized = false
 
@@ -42,17 +43,27 @@ end
 
 --- Creates a new `ParticleEmitter`.
 ---@param texturePath string The file path pointing to the texture used for the emitted particles. It must be a `.png` file with a bit-depth of 32. Invalid file paths will cause an error.
+---@param position Vector | Vector3 | nil Optional. The starting position of the emitter. Default is (0, 0, 0)
 ---@return ParticleEmitter
-function Kunai:CreateParticleEmitter(texturePath)
+function Kunai:CreateParticleEmitter(texturePath, position)
     assert(initialized, "Kunai must be initialized first before calling `CreateParticleEmitter`")
 
+    if not position then
+        position = {X = 0, Y = 0, Z = 0}
+    elseif not position.Z then
+        ---@cast position Vector
+        position = KunaiUtils:VectorToVector3(position)
+    end
+
+    ---@cast position Vector3
+        
     local image = Renderer.LoadImage(texturePath)
     local sourceQuad = SourceQuad.NewFromRectangle(Vector.Zero, image:GetWidth(), image:GetHeight())
 
     ---@type ParticleEmitter
     local ParticleEmitterInstance = {
         IsWorldSpace = true,
-        Position = {X = 0, Y = 0, Z = 0},
+        Position = position,
         MaxParticles = 100,
         Lifetime = 60,
         ParticleRate = 0,
@@ -64,7 +75,27 @@ function Kunai:CreateParticleEmitter(texturePath)
             GradientMin = KunaiGradient:New(),
             GradientMax = KunaiGradient:New()
         },
-        
+        VelocityOverLifetime = {
+            Enabled = false,
+            Space = "Local",
+            LinearVelocity = {
+                X = 0,
+                Y = 0,
+                Z = 0,
+            },
+            OrbitalVelocity = {
+                X = 0,
+                Y = 0,
+                Z = 0,
+            },
+            OrbitalOffset = {
+                X = 0,
+                Y = 0,
+                Z = 0,
+            },
+            Radial = 0,
+            SpeedModifier = 1,
+        },
         _IsDestroyed = false,
         _EmissionAccumulator = 0,
         _IsEmitting = true,

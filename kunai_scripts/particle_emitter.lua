@@ -11,6 +11,7 @@ local KunaiGradient = include("kunai_scripts.kunai_gradient")
 ---@field ParticleRate number How many particles are emitted over the course of one second. Default: 0
 ---@field ColorOverLifetime KunaiColorOverLifetime Attributes relating to how the particles change color over its lifespan.
 ---@field StartColor KColor The initial color for spawned particles. If `ColorOverLifetime.Enabled` is set to `true`, the gradient is multiplied by this.
+---@field VelocityOverLifetime KunaiVelocityOverLifetime
 ---@field private _IsEmitting boolean Determines whether particles are being continuously emitted. Note that `ParticleEmitter:Emit` will still work even with this set to false.
 ---@field private _RenderImage Image
 ---@field private _Particles Particle[]
@@ -187,7 +188,9 @@ function ParticleEmitter:_UpdateParticles()
             local removedParticle = table.remove(self._Particles, i)
             table.insert(self._ParticlePool, removedParticle)
         else
-            particle.Position = KunaiUtils:AddVector3(particle.Position, particle.Velocity)
+            local velocity = self:_GetParticleVelocity(particle)
+            particle.Position = KunaiUtils:AddVector3(particle.Position, velocity)
+
             self:_UpdateParticleColor(particle)
         end
     end
@@ -213,10 +216,10 @@ function ParticleEmitter:_UpdateParticleColor(particle)
     end
 end
 
-
 ---@param particle Particle
 function ParticleEmitter:_InitializeParticle(particle)
-    particle.Position = KunaiUtils:CopyVector3(self.Position)
+    particle.SpawnPosition = KunaiUtils:CopyVector3(self.Position)
+    particle.Position = KunaiUtils:CopyVector3(particle.SpawnPosition)
     particle.Velocity = { X = 0, Y = 0, Z = 0 }
     particle.FrameCount = 0
     particle.Scale = Vector(0.1, 0.1)
@@ -229,5 +232,98 @@ function ParticleEmitter:_InitializeParticle(particle)
     -- To prevent brief visual artifacts like new particles flickering.
     self:_UpdateParticleColor(particle)
 end
+
+---@param particle Particle
+function ParticleEmitter:_GetParticleVelocity(particle)
+    local velocityOverLifetime = self.VelocityOverLifetime
+
+    if not velocityOverLifetime.Enabled then
+        return particle.Velocity
+    end
+
+    -- Linear Velocity Logic
+    local newVelocity = KunaiUtils:AddVector3(
+        particle.Velocity,
+        velocityOverLifetime.LinearVelocity
+    )
+
+    -- Orbital Velocity Logic
+    local center = KunaiUtils:AddVector3(
+        particle.SpawnPosition,
+        velocityOverLifetime.OrbitalOffset
+    )
+
+    local rotatedX = particle.Position.X - center.X
+    local rotatedY = particle.Position.Y - center.Y
+    local rotatedZ = particle.Position.Z - center.Z
+
+    -- Orbital X: Rotate in the YZ plane.
+    local orbitalX = math.rad(velocityOverLifetime.OrbitalVelocity.X * self.VelocityOverLifetime.SpeedModifier)
+
+    if orbitalX ~= 0 then
+        local cosX = math.cos(orbitalX)
+        local sinX = math.sin(orbitalX)
+
+        rotatedY, rotatedZ =
+            rotatedY * cosX - rotatedZ * sinX,
+            rotatedY * sinX + rotatedZ * cosX
+    end
+
+    -- Orbital Y: Rotate in the XZ plane.
+    local orbitalY = math.rad(velocityOverLifetime.OrbitalVelocity.Y * self.VelocityOverLifetime.SpeedModifier)
+
+    if orbitalY ~= 0 then
+        local cosY = math.cos(orbitalY)
+        local sinY = math.sin(orbitalY)
+
+        rotatedX, rotatedZ =
+            rotatedX * cosY + rotatedZ * sinY,
+            -rotatedX * sinY + rotatedZ * cosY
+    end
+
+    -- Orbital Z: Rotate in the XY plane.
+    local orbitalZ = math.rad(velocityOverLifetime.OrbitalVelocity.Z * self.VelocityOverLifetime.SpeedModifier)
+
+    if orbitalZ ~= 0 then
+        local cosZ = math.cos(orbitalZ)
+        local sinZ = math.sin(orbitalZ)
+
+        rotatedX, rotatedY =
+            rotatedX * cosZ - rotatedY * sinZ,
+            rotatedX * sinZ + rotatedY * cosZ
+    end
+
+    local newX = center.X + rotatedX
+    local newY = center.Y + rotatedY
+    local newZ = center.Z + rotatedZ
+
+    local orbitalVelocity = {
+        X = newX - particle.Position.X,
+        Y = newY - particle.Position.Y,
+        Z = newZ - particle.Position.Z
+    }
+
+    newVelocity = KunaiUtils:AddVector3(newVelocity, orbitalVelocity)
+
+    -- Radial Velocity Logic
+    local dx = particle.Position.X - center.X
+    local dy = particle.Position.Y - center.Y
+    local dz = particle.Position.Z - center.Z
+    local length = math.sqrt(dx^2 + dy^2 + dz^2)
+
+    if length > 0 then
+        local radialVelocity = {
+            X = dx / length * velocityOverLifetime.Radial,
+            Y = dy / length * velocityOverLifetime.Radial,
+            Z = dz / length * velocityOverLifetime.Radial,
+        }
+        newVelocity = KunaiUtils:AddVector3(newVelocity, radialVelocity)
+    end
+
+    newVelocity = KunaiUtils:ResizeVector3(newVelocity, self.VelocityOverLifetime.SpeedModifier)
+
+    return newVelocity
+end
+
 
 return ParticleEmitter

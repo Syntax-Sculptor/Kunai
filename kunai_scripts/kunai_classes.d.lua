@@ -18,6 +18,7 @@
 ---@field Color KColor
 ---@field StartColor KColor
 ---@field ColorLerpFactor number
+---@field SpawnPosition Vector3
 
 ---@alias GradientMode "Blend"|"Fixed"
 ---@alias ColorOverLifetimeMode "Gradient"|"TwoGradients"
@@ -33,3 +34,12 @@
 ---@field Gradient KunaiGradient
 ---@field GradientMin KunaiGradient
 ---@field GradientMax KunaiGradient
+
+---@class KunaiVelocityOverLifetime
+---@field Enabled boolean
+---@field Space "Local"|"World"
+---@field LinearVelocity Vector3
+---@field OrbitalVelocity Vector3
+---@field OrbitalOffset Vector3
+---@field Radial number
+---@field SpeedModifier number

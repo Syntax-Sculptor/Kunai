@@ -36,6 +36,17 @@ function KunaiUtils:SubtractVector3(left, right)
     }
 end
 
+---@param vec Vector3
+---@param scale number
+---@return Vector3
+function KunaiUtils:ResizeVector3(vec, scale)
+    return {
+        X = vec.X * scale,
+        Y = vec.Y * scale,
+        Z = vec.Z * scale
+    }
+end
+
 ---@param a number
 ---@param b number
 ---@param t number
@@ -83,6 +94,16 @@ function KunaiUtils:GetRandom(rngOrSeed)
     else
         return utilsRNG:RandomFloat()
     end
+end
+
+---@param vec Vector
+---@@return Vector3
+function KunaiUtils:VectorToVector3(vec)
+    return {
+        X = vec.X,
+        Y = vec.Y,
+        Z = 0
+    }
 end
 
 return KunaiUtils
