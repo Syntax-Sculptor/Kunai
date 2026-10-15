@@ -99,10 +99,11 @@ function Palette:CreateParticleEmitter(texturePath, position)
             Radial = 0,
             SpeedModifier = 1,
         },
-        Rotation = 0,
+        Orientation = 0,
         StartSpeed = 0,
         StartDirection = {X = 1, Y = 0, Z = 0},
         StartSize = Vector.One,
+        StartRotation = 0,
         
         _IsDestroyed = false,
         _EmissionAccumulator = 0,

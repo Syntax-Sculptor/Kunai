@@ -14,7 +14,8 @@ local PaletteGradient = include("palette_scripts.palette_gradient")
 ---@field VelocityOverLifetime PaletteVelocityOverLifetime Dictates how particles move over its lifespan.
 ---@field StartSpeed number The initial speed of the particle when spawned. Default: 0
 ---@field StartDirection Vector3 The default direction of the particle. Default: (1, 0, 0)
----@field Rotation number The particle's rotation, in degrees.
+---@field StartRotation number The initial rotation for each particle. Default: 0
+---@field Orientation number The emitter's rotation, in degrees. This is solely used to handle how particles move out from the emitter as opposed to changing the rotation of the particle's sprite. To change the sprite's actual rotation, use `StartRotation`. Default: 0
 ---@field StartSize Vector The initial scale of spawned particles. Default: (1, 1)
 ---@field private _IsEmitting boolean Determines whether particles are being continuously emitted. Note that `ParticleEmitter:Emit` will still work even with this set to false.
 ---@field private _RenderImage Image
@@ -158,6 +159,7 @@ function ParticleEmitter:_Render()
             scaledWidth,
             scaledHeight
         )
+        destinationQuad:Rotate(particle.Rotation, renderPos)
         self._RenderImage:Render(self._EmitterSourceQuad, destinationQuad, particle.Color)
     end
 end
@@ -224,7 +226,7 @@ end
 ---@param particle Particle
 function ParticleEmitter:_InitializeParticle(particle)
     local direction = PaletteUtils:NormalizeVector3(self.StartDirection)
-    direction = PaletteUtils:RotateVector3(direction, self.Rotation)
+    direction = PaletteUtils:RotateVector3(direction, self.Orientation)
     
     particle.SpawnPosition = PaletteUtils:CopyVector3(self.Position)
     particle.Position = PaletteUtils:CopyVector3(particle.SpawnPosition)
@@ -234,7 +236,7 @@ function ParticleEmitter:_InitializeParticle(particle)
     particle.StartColor = self.StartColor
     particle.Color = self.StartColor
     particle.Lifetime = self.Lifetime
-    particle.Rotation = 0
+    particle.Rotation = self.StartRotation
     particle.ColorLerpFactor = PaletteUtils:GetRandom()
 
     -- To prevent brief visual artifacts like new particles flickering.
@@ -254,7 +256,7 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     local linearVelocity = velocityOverLifetime.LinearVelocity
 
     if velocityOverLifetime.Space == "Local" then
-        linearVelocity = PaletteUtils:RotateVector3(linearVelocity, self.Rotation)
+        linearVelocity = PaletteUtils:RotateVector3(linearVelocity, self.Orientation)
     end
 
     local newVelocity = PaletteUtils:AddVector3(particle.Velocity, linearVelocity)
@@ -265,14 +267,14 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     local orbitalOffset = velocityOverLifetime.OrbitalOffset
 
     if velocityOverLifetime.Space == "Local" then
-        orbitalOffset = PaletteUtils:RotateVector3(orbitalOffset, self.Rotation)    
+        orbitalOffset = PaletteUtils:RotateVector3(orbitalOffset, self.Orientation)    
     end
 
     local center = PaletteUtils:AddVector3(particle.SpawnPosition, orbitalOffset)
     local relativePos = PaletteUtils:SubtractVector3(particle.Position, center)
 
     if velocityOverLifetime.Space == "Local" then
-        relativePos = PaletteUtils:RotateVector3(relativePos, -self.Rotation)
+        relativePos = PaletteUtils:RotateVector3(relativePos, -self.Orientation)
     end
 
     local rotatedX = relativePos.X
@@ -322,7 +324,7 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     }
 
     if velocityOverLifetime.Space == "Local" then
-        rotatedPosition = PaletteUtils:RotateVector3(rotatedPosition, self.Rotation)
+        rotatedPosition = PaletteUtils:RotateVector3(rotatedPosition, self.Orientation)
     end
 
     local newX = center.X + rotatedPosition.X
