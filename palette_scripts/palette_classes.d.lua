@@ -23,19 +23,19 @@
 ---@alias GradientMode "Blend"|"Fixed"
 ---@alias ColorOverLifetimeMode "Gradient"|"TwoGradients"
 
----@class KunaiGradient
----@field ColorKeys KunaiGradientKey[]
----@field AlphaKeys KunaiAlphaKey[]
+---@class PaletteGradient
+---@field ColorKeys PaletteGradientKey[]
+---@field AlphaKeys PaletteAlphaKey[]
 ---@field Mode GradientMode
 
----@class KunaiColorOverLifetime
+---@class PaletteColorOverLifetime
 ---@field Enabled boolean
 ---@field Mode ColorOverLifetimeMode
----@field Gradient KunaiGradient
----@field GradientMin KunaiGradient
----@field GradientMax KunaiGradient
+---@field Gradient PaletteGradient
+---@field GradientMin PaletteGradient
+---@field GradientMax PaletteGradient
 
----@class KunaiVelocityOverLifetime
+---@class PaletteVelocityOverLifetime
 ---@field Enabled boolean
 ---@field Space "Local"|"World"
 ---@field LinearVelocity Vector3

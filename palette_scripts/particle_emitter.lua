@@ -1,7 +1,7 @@
 local GAME_FRAMES_PER_SECOND = 30
 
-local KunaiUtils = include("kunai_scripts.kunai_utils")
-local KunaiGradient = include("kunai_scripts.kunai_gradient")
+local PaletteUtils = include("palette_scripts.palette_utils")
+local PaletteGradient = include("palette_scripts.palette_gradient")
 
 ---@class ParticleEmitter This class defines a `ParticleEmitter`, which is responsible for creating particles and managing them.
 ---@field IsWorldSpace boolean Whether the emitted particles are rendered on the world space or directly onto your screen. Default: True
@@ -9,9 +9,9 @@ local KunaiGradient = include("kunai_scripts.kunai_gradient")
 ---@field MaxParticles integer The maximum amount of particles that can be active at a given time. Default: 100
 ---@field Lifetime integer How many frames a particle exists until it's destroyed. Default: 60
 ---@field ParticleRate number How many particles are emitted over the course of one second. Default: 0
----@field ColorOverLifetime KunaiColorOverLifetime Attributes relating to how the particles change color over its lifespan.
+---@field ColorOverLifetime PaletteColorOverLifetime Attributes relating to how the particles change color over its lifespan.
 ---@field StartColor KColor The initial color for spawned particles. If `ColorOverLifetime.Enabled` is set to `true`, the gradient is multiplied by this.
----@field VelocityOverLifetime KunaiVelocityOverLifetime Dictates how particles move over its lifespan.
+---@field VelocityOverLifetime PaletteVelocityOverLifetime Dictates how particles move over its lifespan.
 ---@field StartSpeed number The initial speed of the particle when spawned. Default: 0
 ---@field StartDirection Vector3 The default direction of the particle. Default: (1, 0, 0)
 ---@field Rotation number The particle's rotation, in degrees.
@@ -193,7 +193,7 @@ function ParticleEmitter:_UpdateParticles()
             table.insert(self._ParticlePool, removedParticle)
         else
             local velocity = self:_GetParticleVelocity(particle)
-            particle.Position = KunaiUtils:AddVector3(particle.Position, velocity)
+            particle.Position = PaletteUtils:AddVector3(particle.Position, velocity)
 
             self:_UpdateParticleColor(particle)
         end
@@ -211,31 +211,31 @@ function ParticleEmitter:_UpdateParticleColor(particle)
     local t = particle.FrameCount / particle.Lifetime
 
     if self.ColorOverLifetime.Mode == "Gradient" then
-        local gradientColor = KunaiGradient:Evaluate(self.ColorOverLifetime.Gradient, t, self.ColorOverLifetime.Gradient.Mode)
-        particle.Color = KunaiUtils:MultiplyKColor(particle.StartColor, gradientColor)
+        local gradientColor = PaletteGradient:Evaluate(self.ColorOverLifetime.Gradient, t, self.ColorOverLifetime.Gradient.Mode)
+        particle.Color = PaletteUtils:MultiplyKColor(particle.StartColor, gradientColor)
     elseif self.ColorOverLifetime.Mode == "TwoGradients" then
-        local gradientColorMin = KunaiGradient:Evaluate(self.ColorOverLifetime.GradientMin, t, self.ColorOverLifetime.GradientMin.Mode)
-        local gradientColorMax = KunaiGradient:Evaluate(self.ColorOverLifetime.GradientMax, t, self.ColorOverLifetime.GradientMax.Mode)
-        local gradientColor = KunaiUtils:LerpKColor(gradientColorMin, gradientColorMax, particle.ColorLerpFactor)
-        particle.Color = KunaiUtils:MultiplyKColor(particle.StartColor, gradientColor)
+        local gradientColorMin = PaletteGradient:Evaluate(self.ColorOverLifetime.GradientMin, t, self.ColorOverLifetime.GradientMin.Mode)
+        local gradientColorMax = PaletteGradient:Evaluate(self.ColorOverLifetime.GradientMax, t, self.ColorOverLifetime.GradientMax.Mode)
+        local gradientColor = PaletteUtils:LerpKColor(gradientColorMin, gradientColorMax, particle.ColorLerpFactor)
+        particle.Color = PaletteUtils:MultiplyKColor(particle.StartColor, gradientColor)
     end
 end
 
 ---@param particle Particle
 function ParticleEmitter:_InitializeParticle(particle)
-    local direction = KunaiUtils:NormalizeVector3(self.StartDirection)
-    direction = KunaiUtils:RotateVector3(direction, self.Rotation)
+    local direction = PaletteUtils:NormalizeVector3(self.StartDirection)
+    direction = PaletteUtils:RotateVector3(direction, self.Rotation)
     
-    particle.SpawnPosition = KunaiUtils:CopyVector3(self.Position)
-    particle.Position = KunaiUtils:CopyVector3(particle.SpawnPosition)
-    particle.Velocity = KunaiUtils:ResizeVector3(direction, self.StartSpeed)
+    particle.SpawnPosition = PaletteUtils:CopyVector3(self.Position)
+    particle.Position = PaletteUtils:CopyVector3(particle.SpawnPosition)
+    particle.Velocity = PaletteUtils:ResizeVector3(direction, self.StartSpeed)
     particle.FrameCount = 0
     particle.Scale = self.StartSize
     particle.StartColor = self.StartColor
     particle.Color = self.StartColor
     particle.Lifetime = self.Lifetime
     particle.Rotation = 0
-    particle.ColorLerpFactor = KunaiUtils:GetRandom()
+    particle.ColorLerpFactor = PaletteUtils:GetRandom()
 
     -- To prevent brief visual artifacts like new particles flickering.
     self:_UpdateParticleColor(particle)
@@ -254,25 +254,25 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     local linearVelocity = velocityOverLifetime.LinearVelocity
 
     if velocityOverLifetime.Space == "Local" then
-        linearVelocity = KunaiUtils:RotateVector3(linearVelocity, self.Rotation)
+        linearVelocity = PaletteUtils:RotateVector3(linearVelocity, self.Rotation)
     end
 
-    local newVelocity = KunaiUtils:AddVector3(particle.Velocity, linearVelocity)
-    newVelocity = KunaiUtils:ResizeVector3(newVelocity, velocityOverLifetime.SpeedModifier)
+    local newVelocity = PaletteUtils:AddVector3(particle.Velocity, linearVelocity)
+    newVelocity = PaletteUtils:ResizeVector3(newVelocity, velocityOverLifetime.SpeedModifier)
 
     -- Orbital Velocity Logic
 
     local orbitalOffset = velocityOverLifetime.OrbitalOffset
 
     if velocityOverLifetime.Space == "Local" then
-        orbitalOffset = KunaiUtils:RotateVector3(orbitalOffset, self.Rotation)    
+        orbitalOffset = PaletteUtils:RotateVector3(orbitalOffset, self.Rotation)    
     end
 
-    local center = KunaiUtils:AddVector3(particle.SpawnPosition, orbitalOffset)
-    local relativePos = KunaiUtils:SubtractVector3(particle.Position, center)
+    local center = PaletteUtils:AddVector3(particle.SpawnPosition, orbitalOffset)
+    local relativePos = PaletteUtils:SubtractVector3(particle.Position, center)
 
     if velocityOverLifetime.Space == "Local" then
-        relativePos = KunaiUtils:RotateVector3(relativePos, -self.Rotation)
+        relativePos = PaletteUtils:RotateVector3(relativePos, -self.Rotation)
     end
 
     local rotatedX = relativePos.X
@@ -322,7 +322,7 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     }
 
     if velocityOverLifetime.Space == "Local" then
-        rotatedPosition = KunaiUtils:RotateVector3(rotatedPosition, self.Rotation)
+        rotatedPosition = PaletteUtils:RotateVector3(rotatedPosition, self.Rotation)
     end
 
     local newX = center.X + rotatedPosition.X
@@ -335,7 +335,7 @@ function ParticleEmitter:_GetParticleVelocity(particle)
         Z = newZ - particle.Position.Z
     }
 
-    newVelocity = KunaiUtils:AddVector3(newVelocity, orbitalVelocity)
+    newVelocity = PaletteUtils:AddVector3(newVelocity, orbitalVelocity)
 
     -- Radial Velocity Logic
     local dx = particle.Position.X - center.X
@@ -349,7 +349,7 @@ function ParticleEmitter:_GetParticleVelocity(particle)
             Y = dy / length * velocityOverLifetime.Radial * velocityOverLifetime.SpeedModifier,
             Z = dz / length * velocityOverLifetime.Radial * velocityOverLifetime.SpeedModifier,
         }
-        newVelocity = KunaiUtils:AddVector3(newVelocity, radialVelocity)
+        newVelocity = PaletteUtils:AddVector3(newVelocity, radialVelocity)
     end
 
     return newVelocity
