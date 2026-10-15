@@ -200,6 +200,7 @@ end
 ---@param particle Particle
 function ParticleEmitter:_UpdateParticleColor(particle)
     if not self.ColorOverLifetime.Enabled or particle.Lifetime <= 0 then
+        particle.Color = particle.StartColor
         return
     end
     
@@ -222,7 +223,7 @@ function ParticleEmitter:_InitializeParticle(particle)
     particle.Position = KunaiUtils:CopyVector3(particle.SpawnPosition)
     particle.Velocity = { X = 0, Y = 0, Z = 0 }
     particle.FrameCount = 0
-    particle.Scale = Vector(0.1, 0.1)
+    particle.Scale = Vector.One
     particle.StartColor = self.StartColor
     particle.Color = self.StartColor
     particle.Lifetime = self.Lifetime

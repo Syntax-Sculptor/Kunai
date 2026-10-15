@@ -96,7 +96,7 @@ end
 ---                         key's color (the first key with a timestamp greater than `time`), 
 ---                         producing abrupt transitions. Default: "Blend".
 function KunaiGradient:Evaluate(gradient, time, mode)
-    mode = mode or "Blend"
+    mode = mode or gradient.Mode or "Blend"
     local color = KunaiGradient:EvaluateColor(gradient.ColorKeys, time, mode)
     local alpha = KunaiGradient:EvaluateAlpha(gradient.AlphaKeys, time, mode)
     return KColor(color.Red, color.Green, color.Blue, alpha)

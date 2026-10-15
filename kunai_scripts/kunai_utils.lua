@@ -97,7 +97,7 @@ function KunaiUtils:GetRandom(rngOrSeed)
 end
 
 ---@param vec Vector
----@@return Vector3
+---@return Vector3
 function KunaiUtils:VectorToVector3(vec)
     return {
         X = vec.X,

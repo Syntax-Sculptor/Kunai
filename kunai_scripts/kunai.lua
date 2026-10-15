@@ -53,6 +53,8 @@ function Kunai:CreateParticleEmitter(texturePath, position)
     elseif not position.Z then
         ---@cast position Vector
         position = KunaiUtils:VectorToVector3(position)
+    else
+        position = KunaiUtils:CopyVector3(position)
     end
 
     ---@cast position Vector3
