@@ -33,7 +33,7 @@ end
 local function destroyNonPersistentEmitters()
     -- We loop through the emitters backwards since calling :Destroy() on one will cause the 
     -- `emitters` table to shift due to a call to `table.remove`.
-    for i = #emitters, 0, -1 do
+    for i = #emitters, 1, -1 do
         local emitter = emitters[i]
         if not emitter.PersistAcrossRooms then
             emitter:Destroy()
