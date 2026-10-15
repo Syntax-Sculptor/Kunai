@@ -36,6 +36,20 @@ function KunaiUtils:SubtractVector3(left, right)
     }
 end
 
+--- Divides a Vector3 object by a number. Errors if the number is 0.
+---@param left Vector3
+---@param right number
+---@return Vector3
+function KunaiUtils:DivideVector(left, right)
+    assert(right ~= 0, "Attempted to divide Vector3 by 0")
+
+    return {
+        X = left.X / right,
+        Y = left.Y / right,
+        Z = left.Z / right
+    }
+end
+
 ---@param vec Vector3
 ---@param scale number
 ---@return Vector3
@@ -123,6 +137,17 @@ function KunaiUtils:RotateVector3(vec, angle)
         Y = vec.X * sin + vec.Y * cos,
         Z = vec.Z
     }
+end
+
+---@param vec Vector3
+function KunaiUtils:NormalizeVector3(vec)
+    local length = math.sqrt(vec.X^2 + vec.Y^2 + vec.Z^2)
+
+    if length == 0 then
+        return vec
+    end
+    
+    return KunaiUtils:DivideVector(vec, length)
 end
 
 return KunaiUtils

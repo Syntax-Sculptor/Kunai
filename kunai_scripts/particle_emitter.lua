@@ -12,7 +12,10 @@ local KunaiGradient = include("kunai_scripts.kunai_gradient")
 ---@field ColorOverLifetime KunaiColorOverLifetime Attributes relating to how the particles change color over its lifespan.
 ---@field StartColor KColor The initial color for spawned particles. If `ColorOverLifetime.Enabled` is set to `true`, the gradient is multiplied by this.
 ---@field VelocityOverLifetime KunaiVelocityOverLifetime Dictates how particles move over its lifespan.
+---@field StartSpeed number The initial speed of the particle when spawned. Default: 0
+---@field StartDirection Vector3 The default direction of the particle. Default: (1, 0, 0)
 ---@field Rotation number The particle's rotation, in degrees.
+---@field StartSize Vector The initial scale of spawned particles. Default: (1, 1)
 ---@field private _IsEmitting boolean Determines whether particles are being continuously emitted. Note that `ParticleEmitter:Emit` will still work even with this set to false.
 ---@field private _RenderImage Image
 ---@field private _Particles Particle[]
@@ -220,11 +223,14 @@ end
 
 ---@param particle Particle
 function ParticleEmitter:_InitializeParticle(particle)
+    local direction = KunaiUtils:NormalizeVector3(self.StartDirection)
+    direction = KunaiUtils:RotateVector3(direction, self.Rotation)
+    
     particle.SpawnPosition = KunaiUtils:CopyVector3(self.Position)
     particle.Position = KunaiUtils:CopyVector3(particle.SpawnPosition)
-    particle.Velocity = { X = 0, Y = 0, Z = 0 }
+    particle.Velocity = KunaiUtils:ResizeVector3(direction, self.StartSpeed)
     particle.FrameCount = 0
-    particle.Scale = Vector.One
+    particle.Scale = self.StartSize
     particle.StartColor = self.StartColor
     particle.Color = self.StartColor
     particle.Lifetime = self.Lifetime
@@ -268,7 +274,7 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     if velocityOverLifetime.Space == "Local" then
         relativePos = KunaiUtils:RotateVector3(relativePos, -self.Rotation)
     end
-    
+
     local rotatedX = relativePos.X
     local rotatedY = relativePos.Y
     local rotatedZ = relativePos.Z

@@ -54,6 +54,7 @@ function Kunai:CreateParticleEmitter(texturePath, position)
         ---@cast position Vector
         position = KunaiUtils:VectorToVector3(position)
     else
+        ---@cast position Vector3
         position = KunaiUtils:CopyVector3(position)
     end
 
@@ -99,6 +100,9 @@ function Kunai:CreateParticleEmitter(texturePath, position)
             SpeedModifier = 1,
         },
         Rotation = 0,
+        StartSpeed = 0,
+        StartDirection = {X = 1, Y = 0, Z = 0},
+        StartSize = Vector.One,
         
         _IsDestroyed = false,
         _EmissionAccumulator = 0,
