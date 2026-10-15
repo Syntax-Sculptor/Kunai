@@ -254,10 +254,6 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     local newVelocity = KunaiUtils:AddVector3(particle.Velocity, linearVelocity)
     newVelocity = KunaiUtils:ResizeVector3(newVelocity, velocityOverLifetime.SpeedModifier)
 
-    if velocityOverLifetime.Space == "Local" then
-        newVelocity = KunaiUtils:RotateVector3(newVelocity, self.Rotation)
-    end
-
     -- Orbital Velocity Logic
     local center = KunaiUtils:AddVector3(
         particle.SpawnPosition,
