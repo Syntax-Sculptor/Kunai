@@ -49,7 +49,7 @@ function Kunai:CreateParticleEmitter(texturePath)
     local sourceQuad = SourceQuad.NewFromRectangle(Vector.Zero, image:GetWidth(), image:GetHeight())
 
     ---@type ParticleEmitter
-    local ParticleInstance = {
+    local ParticleEmitterInstance = {
         IsWorldSpace = true,
         Position = {X = 0, Y = 0, Z = 0},
         MaxParticles = 100,
@@ -66,7 +66,7 @@ function Kunai:CreateParticleEmitter(texturePath)
         _DestroyFun = unregisterEmitter,
     }
 
-    local ParticleEmitterMT = setmetatable(ParticleInstance, ParticleEmitter)
+    local ParticleEmitterMT = setmetatable(ParticleEmitterInstance, ParticleEmitter)
 
     ---@cast ParticleEmitterMT ParticleEmitter
     table.insert(emitters, ParticleEmitterMT)
