@@ -98,6 +98,8 @@ function Kunai:CreateParticleEmitter(texturePath, position)
             Radial = 0,
             SpeedModifier = 1,
         },
+        Rotation = 0,
+        
         _IsDestroyed = false,
         _EmissionAccumulator = 0,
         _IsEmitting = true,

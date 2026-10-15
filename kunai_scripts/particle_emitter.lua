@@ -11,7 +11,8 @@ local KunaiGradient = include("kunai_scripts.kunai_gradient")
 ---@field ParticleRate number How many particles are emitted over the course of one second. Default: 0
 ---@field ColorOverLifetime KunaiColorOverLifetime Attributes relating to how the particles change color over its lifespan.
 ---@field StartColor KColor The initial color for spawned particles. If `ColorOverLifetime.Enabled` is set to `true`, the gradient is multiplied by this.
----@field VelocityOverLifetime KunaiVelocityOverLifetime
+---@field VelocityOverLifetime KunaiVelocityOverLifetime Dictates how particles move over its lifespan.
+---@field Rotation number The particle's rotation, in degrees.
 ---@field private _IsEmitting boolean Determines whether particles are being continuously emitted. Note that `ParticleEmitter:Emit` will still work even with this set to false.
 ---@field private _RenderImage Image
 ---@field private _Particles Particle[]
@@ -243,11 +244,19 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     end
 
     -- Linear Velocity Logic
-    local newVelocity = KunaiUtils:AddVector3(
-        particle.Velocity,
-        velocityOverLifetime.LinearVelocity
-    )
+
+    local linearVelocity = velocityOverLifetime.LinearVelocity
+
+    if velocityOverLifetime.Space == "Local" then
+        linearVelocity = KunaiUtils:RotateVector3(linearVelocity, self.Rotation)
+    end
+
+    local newVelocity = KunaiUtils:AddVector3(particle.Velocity, linearVelocity)
     newVelocity = KunaiUtils:ResizeVector3(newVelocity, velocityOverLifetime.SpeedModifier)
+
+    if velocityOverLifetime.Space == "Local" then
+        newVelocity = KunaiUtils:RotateVector3(newVelocity, self.Rotation)
+    end
 
     -- Orbital Velocity Logic
     local center = KunaiUtils:AddVector3(

@@ -106,4 +106,23 @@ function KunaiUtils:VectorToVector3(vec)
     }
 end
 
+---@param vec Vector3
+---@param angle number
+---@return Vector3
+function KunaiUtils:RotateVector3(vec, angle)
+    -- Realistically, we could just construct a `Vector` object and call `Rotate` but maybe avoiding
+    -- unnecessarily allocations like that might be the best?
+    -- TODO: BENCHMARK that observation.
+
+    local radians = math.rad(angle)
+    local cos = math.cos(radians)
+    local sin = math.sin(radians)
+
+    return {
+        X = vec.X * cos - vec.Y * sin,
+        Y = vec.X * sin + vec.Y * cos,
+        Z = vec.Z
+    }
+end
+
 return KunaiUtils
