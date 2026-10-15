@@ -1,13 +1,16 @@
 local GAME_FRAMES_PER_SECOND = 30
 
 local KunaiUtils = include("kunai_scripts.kunai_utils")
+local KunaiGradient = include("kunai_scripts.kunai_gradient")
 
 ---@class ParticleEmitter This class defines a `ParticleEmitter`, which is responsible for creating particles and managing them.
 ---@field IsWorldSpace boolean Whether the emitted particles are rendered on the world space or directly onto your screen. Default: True
----@field Position Vector3 The position of the emitter. This is where all spawned particles originate from. Default: (0, 0, 0).
+---@field Position Vector3 The position of the emitter. This is where all spawned particles originate from. Default: (0, 0, 0)
 ---@field MaxParticles integer The maximum amount of particles that can be active at a given time. Default: 100
----@field Lifetime integer How many frames a particle exists until it's destroyed.
----@field ParticleRate number How many particles are emitted over the course of one second.
+---@field Lifetime integer How many frames a particle exists until it's destroyed. Default: 60
+---@field ParticleRate number How many particles are emitted over the course of one second. Default: 0
+---@field ColorOverLifetime KunaiColorOverLifetime Attributes relating to how the particles change color over its lifespan.
+---@field StartColor KColor The initial color for spawned particles. If `ColorOverLifetime.Enabled` is set to `true`, the gradient is multiplied by this.
 ---@field private _IsEmitting boolean Determines whether particles are being continuously emitted. Note that `ParticleEmitter:Emit` will still work even with this set to false.
 ---@field private _RenderImage Image
 ---@field private _Particles Particle[]
@@ -178,25 +181,53 @@ function ParticleEmitter:_UpdateParticles()
     for i = #self._Particles, 1, -1 do
         local particle = self._Particles[i]
 
-        particle.Position = KunaiUtils:AddVector3(particle.Position, particle.Velocity)
         particle.FrameCount = particle.FrameCount + 1
 
         if particle.FrameCount >= particle.Lifetime then
             local removedParticle = table.remove(self._Particles, i)
             table.insert(self._ParticlePool, removedParticle)
+        else
+            particle.Position = KunaiUtils:AddVector3(particle.Position, particle.Velocity)
+            self:_UpdateParticleColor(particle)
         end
     end
 end
+
+
+---@param particle Particle
+function ParticleEmitter:_UpdateParticleColor(particle)
+    if not self.ColorOverLifetime.Enabled or particle.Lifetime <= 0 then
+        return
+    end
+    
+    local t = particle.FrameCount / particle.Lifetime
+
+    if self.ColorOverLifetime.Mode == "Gradient" then
+        local gradientColor = KunaiGradient:Evaluate(self.ColorOverLifetime.Gradient, t, self.ColorOverLifetime.Gradient.Mode)
+        particle.Color = KunaiUtils:MultiplyKColor(particle.StartColor, gradientColor)
+    elseif self.ColorOverLifetime.Mode == "TwoGradients" then
+        local gradientColorMin = KunaiGradient:Evaluate(self.ColorOverLifetime.GradientMin, t, self.ColorOverLifetime.GradientMin.Mode)
+        local gradientColorMax = KunaiGradient:Evaluate(self.ColorOverLifetime.GradientMax, t, self.ColorOverLifetime.GradientMax.Mode)
+        local gradientColor = KunaiUtils:LerpKColor(gradientColorMin, gradientColorMax, particle.ColorLerpFactor)
+        particle.Color = KunaiUtils:MultiplyKColor(particle.StartColor, gradientColor)
+    end
+end
+
 
 ---@param particle Particle
 function ParticleEmitter:_InitializeParticle(particle)
     particle.Position = KunaiUtils:CopyVector3(self.Position)
     particle.Velocity = { X = 0, Y = 0, Z = 0 }
     particle.FrameCount = 0
-    particle.Scale = Vector.One
-    particle.Color = KColor.White
+    particle.Scale = Vector(0.1, 0.1)
+    particle.StartColor = self.StartColor
+    particle.Color = self.StartColor
     particle.Lifetime = self.Lifetime
     particle.Rotation = 0
+    particle.ColorLerpFactor = KunaiUtils:GetRandom()
+
+    -- To prevent brief visual artifacts like new particles flickering.
+    self:_UpdateParticleColor(particle)
 end
 
 return ParticleEmitter

@@ -1,5 +1,6 @@
 local Kunai = {}
 local ParticleEmitter = include("kunai_scripts.particle_emitter")
+local KunaiGradient = include("kunai_scripts.kunai_gradient")
 
 local initialized = false
 
@@ -55,6 +56,14 @@ function Kunai:CreateParticleEmitter(texturePath)
         MaxParticles = 100,
         Lifetime = 60,
         ParticleRate = 0,
+        StartColor = KColor.White,
+        ColorOverLifetime = {
+            Enabled = false,
+            Mode = "Gradient",
+            Gradient = KunaiGradient:New(),
+            GradientMin = KunaiGradient:New(),
+            GradientMax = KunaiGradient:New()
+        },
         
         _IsDestroyed = false,
         _EmissionAccumulator = 0,

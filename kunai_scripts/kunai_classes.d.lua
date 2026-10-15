@@ -16,3 +16,20 @@
 ---@field Scale Vector The particle's scale multiplier. Setting it to `Vector(1, 1)` will use the sprite's original dimensions.
 ---@field Rotation number
 ---@field Color KColor
+---@field StartColor KColor
+---@field ColorLerpFactor number
+
+---@alias GradientMode "Blend"|"Fixed"
+---@alias ColorOverLifetimeMode "Gradient"|"TwoGradients"
+
+---@class KunaiGradient
+---@field ColorKeys KunaiGradientKey[]
+---@field AlphaKeys KunaiAlphaKey[]
+---@field Mode GradientMode
+
+---@class KunaiColorOverLifetime
+---@field Enabled boolean
+---@field Mode ColorOverLifetimeMode
+---@field Gradient KunaiGradient
+---@field GradientMin KunaiGradient
+---@field GradientMax KunaiGradient
