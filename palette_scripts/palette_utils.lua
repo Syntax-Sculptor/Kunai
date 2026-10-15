@@ -144,7 +144,7 @@ function PaletteUtils:NormalizeVector3(vec)
     local length = math.sqrt(vec.X^2 + vec.Y^2 + vec.Z^2)
 
     if length == 0 then
-        return vec
+        return {X = 0, Y = 0, Z = 0}
     end
     
     return PaletteUtils:DivideVector(vec, length)

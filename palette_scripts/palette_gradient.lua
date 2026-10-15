@@ -36,7 +36,7 @@ function PaletteGradient:EvaluateColor(keys, time, mode)
     for i = 2, #keys do
         if keys[i].Time > time then
             if mode == "Fixed" then
-                return keys[i].Color
+                return keys[i - 1].Color
             end
 
             min = keys[i - 1]
@@ -75,7 +75,7 @@ function PaletteGradient:EvaluateAlpha(keys, time, mode)
     for i = 2, #keys do
         if keys[i].Time > time then
             if mode == "Fixed" then
-                return keys[i].Alpha
+                return keys[i - 1].Alpha
             end
 
             min = keys[i - 1]

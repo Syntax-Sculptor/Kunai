@@ -233,7 +233,7 @@ function ParticleEmitter:_InitializeParticle(particle)
     particle.Position = PaletteUtils:CopyVector3(particle.SpawnPosition)
     particle.Velocity = PaletteUtils:ResizeVector3(direction, self.StartSpeed)
     particle.FrameCount = 0
-    particle.Scale = self.StartSize
+    particle.Scale = Vector(self.StartSize.X, self.StartSize.Y)
     particle.StartColor = self.StartColor
     particle.Color = self.StartColor
     particle.Lifetime = self.Lifetime
