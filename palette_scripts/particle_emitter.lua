@@ -33,7 +33,7 @@ ParticleEmitter.__index = ParticleEmitter
 --- every frame using `MC_POST_UPDATE`. While there's typically no need to call this method as
 --- it's done automatically, it may be useful for forcing updates.
 function ParticleEmitter:Update()
-    if self._IsDestroyed then
+    if self:IsDestroyed() then
         return
     end
 
@@ -82,7 +82,7 @@ end
 
 --- Enables continuous particle emission.
 function ParticleEmitter:Play()
-    if self._IsDestroyed then
+    if self:IsDestroyed() then
         return
     end
     
@@ -92,7 +92,7 @@ end
 --- Disables continuous particle emission. This does not clear particles that have already spawned.
 --- If you wish to destroy already spawned particles, use `ParticleEmitter:Clear()`.
 function ParticleEmitter:Stop()
-    if self._IsDestroyed then
+    if self:IsDestroyed() then
         return
     end
 
@@ -107,7 +107,7 @@ end
 
 --- Destroys all particles spawned by the emitter.
 function ParticleEmitter:Clear()
-    if self._IsDestroyed then
+    if self:IsDestroyed() then
         return
     end
 
@@ -121,7 +121,7 @@ end
 --- Destroys the ParticleEmitter and all of the particles it has spawned. When destroyed, it can no
 --- longer be used.
 function ParticleEmitter:Destroy()
-    if self._IsDestroyed then
+    if self:IsDestroyed() then
         return
     end
 
@@ -138,7 +138,7 @@ function ParticleEmitter:Destroy()
 end
 
 function ParticleEmitter:_Render()
-    if self._IsDestroyed then
+    if self:IsDestroyed() then
         return
     end
 
@@ -188,7 +188,7 @@ function ParticleEmitter:_UpdateContinuousEmission()
 end
 
 function ParticleEmitter:_UpdateParticles()
-    if self._IsDestroyed then
+    if self:IsDestroyed() then
         return
     end
 
