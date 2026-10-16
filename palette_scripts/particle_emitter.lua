@@ -99,6 +99,12 @@ function ParticleEmitter:Stop()
     self._IsEmitting = false
 end
 
+
+--- Returns whether the ParticleEmitter was destroyed.
+function ParticleEmitter:IsDestroyed()
+    return self._IsDestroyed
+end
+
 --- Destroys all particles spawned by the emitter.
 function ParticleEmitter:Clear()
     if self._IsDestroyed then
