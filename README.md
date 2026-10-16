@@ -23,8 +23,6 @@ Installing Palette is extremely simple!
 3. In `main.lua`, load the file using `include` and initialize it:
 
 ```lua
-A formal contribution guidelines page will be written very soon.
-
 local TestMod = RegisterMod("Palette Test Mod", 1)
 local Palette = include("test-mod-scripts.palette") -- Change the directory based on where you saved Palette.
 
