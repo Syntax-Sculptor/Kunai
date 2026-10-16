@@ -2,65 +2,6 @@ local PaletteUtils = {}
 
 local utilsRNG = RNG(Random(), 35)
 
----@param vec Vector3 | Vector
----@return Vector3
-function PaletteUtils:CopyVector3(vec)
-    return {
-        X = vec.X,
-        Y = vec.Y,
-        Z = vec.Z or 0
-    }
-end
-
---- Adds two Vector3/Vector objects.
----@param left Vector3 | Vector
----@param right Vector3 | Vector
----@return Vector3
-function PaletteUtils:AddVector3(left, right)
-    return {
-        X = left.X + right.X,
-        Y = left.Y + right.Y,
-        Z = (left.Z or 0) + (right.Z or 0)
-    }
-end
-
---- Subtracts two Vector3 objects..
----@param left Vector3
----@param right Vector3
----@return Vector3
-function PaletteUtils:SubtractVector3(left, right)
-    return {
-        X = left.X - right.X,
-        Y = left.Y - right.Y,
-        Z = left.Z - right.Z
-    }
-end
-
---- Divides a Vector3 object by a number. Errors if the number is 0.
----@param left Vector3
----@param right number
----@return Vector3
-function PaletteUtils:DivideVector3(left, right)
-    assert(right ~= 0, "Attempted to divide Vector3 by 0")
-
-    return {
-        X = left.X / right,
-        Y = left.Y / right,
-        Z = left.Z / right
-    }
-end
-
----@param vec Vector3
----@param scale number
----@return Vector3
-function PaletteUtils:ResizeVector3(vec, scale)
-    return {
-        X = vec.X * scale,
-        Y = vec.Y * scale,
-        Z = vec.Z * scale
-    }
-end
-
 ---@param a number
 ---@param b number
 ---@param t number
@@ -108,41 +49,6 @@ function PaletteUtils:GetRandom(rngOrSeed)
     else
         return utilsRNG:RandomFloat()
     end
-end
-
----@param vec Vector3
----@param angle number
----@return Vector3
-function PaletteUtils:RotateVector3(vec, angle)
-    -- Realistically, we could just construct a `Vector` object and call `Rotate` but maybe avoiding
-    -- unnecessarily allocations like that might be the best?
-    -- TODO: BENCHMARK that observation.
-
-    local radians = math.rad(angle)
-    local cos = math.cos(radians)
-    local sin = math.sin(radians)
-
-    return {
-        X = vec.X * cos - vec.Y * sin,
-        Y = vec.X * sin + vec.Y * cos,
-        Z = vec.Z or 0
-    }
-end
-
----@param vec Vector3
-function PaletteUtils:NormalizeVector3(vec)
-    local z = vec.Z or 0
-    local length = math.sqrt(vec.X^2 + vec.Y^2 + z^2)
-
-    if length == 0 then
-        return {X = 0, Y = 0, Z = 0}
-    end
-    
-    return {
-        X = vec.X / length,
-        Y = vec.Y / length,
-        Z = z / length,
-    }
 end
 
 return PaletteUtils

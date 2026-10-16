@@ -2,6 +2,7 @@ local GAME_FRAMES_PER_SECOND = 30
 
 local PaletteUtils = include("palette_scripts.palette_utils")
 local PaletteGradient = include("palette_scripts.palette_gradient")
+local Vector3 = include("palette_scripts.vector3")
 
 ---@class ParticleEmitter This class defines a `ParticleEmitter`, which is responsible for creating particles and managing them.
 ---@field IsWorldSpace boolean Whether the emitted particles are rendered on the world space or directly onto your screen. Default: True
@@ -202,7 +203,7 @@ function ParticleEmitter:_UpdateParticles()
             table.insert(self._ParticlePool, removedParticle)
         else
             local velocity = self:_GetParticleVelocity(particle)
-            particle.Position = PaletteUtils:AddVector3(particle.Position, velocity)
+            particle.Position = particle.Position + velocity
 
             self:_UpdateParticleColor(particle)
         end
@@ -232,12 +233,12 @@ end
 
 ---@param particle Particle
 function ParticleEmitter:_InitializeParticle(particle)
-    local direction = PaletteUtils:NormalizeVector3(self.StartDirection)
-    direction = PaletteUtils:RotateVector3(direction, self.Orientation)
+    local direction = Vector3.fromVector(self.StartDirection)
+    direction:Normalize():RotateZ(self.Orientation)
     
-    particle.SpawnPosition = PaletteUtils:CopyVector3(self.Position)
-    particle.Position = PaletteUtils:CopyVector3(particle.SpawnPosition)
-    particle.Velocity = PaletteUtils:ResizeVector3(direction, self.StartSpeed)
+    particle.SpawnPosition = Vector3.fromVector(self.Position)
+    particle.Position = particle.SpawnPosition:Copy()
+    particle.Velocity = direction * self.StartSpeed
     particle.FrameCount = 0
     particle.Scale = Vector(self.StartSize.X, self.StartSize.Y)
     particle.StartColor = self.StartColor
@@ -260,109 +261,68 @@ function ParticleEmitter:_GetParticleVelocity(particle)
 
     -- Linear Velocity Logic
 
-    local linearVelocity = velocityOverLifetime.LinearVelocity
+    local linearVelocity = Vector3.fromVector(velocityOverLifetime.LinearVelocity)
 
     if velocityOverLifetime.Space == "Local" then
-        linearVelocity = PaletteUtils:RotateVector3(linearVelocity, self.Orientation)
+        linearVelocity:RotateZ(self.Orientation)
     end
 
-    local newVelocity = PaletteUtils:AddVector3(particle.Velocity, linearVelocity)
-    newVelocity = PaletteUtils:ResizeVector3(newVelocity, velocityOverLifetime.SpeedModifier)
+    local newVelocity = (particle.Velocity + linearVelocity) * velocityOverLifetime.SpeedModifier
 
     -- Orbital Velocity Logic
 
-    local orbitalOffset = velocityOverLifetime.OrbitalOffset
+    local orbitalOffset = Vector3.fromVector(velocityOverLifetime.OrbitalOffset)
 
     if velocityOverLifetime.Space == "Local" then
-        orbitalOffset = PaletteUtils:RotateVector3(orbitalOffset, self.Orientation)    
+        orbitalOffset:RotateZ(self.Orientation)
     end
 
-    local center = PaletteUtils:AddVector3(particle.SpawnPosition, orbitalOffset)
-    local relativePos = PaletteUtils:SubtractVector3(particle.Position, center)
+    local center = particle.SpawnPosition + orbitalOffset
+    local relativePos = particle.Position - center
 
     if velocityOverLifetime.Space == "Local" then
-        relativePos = PaletteUtils:RotateVector3(relativePos, -self.Orientation)
+        relativePos:RotateZ(-self.Orientation)
     end
-
-    local rotatedX = relativePos.X
-    local rotatedY = relativePos.Y
-    local rotatedZ = relativePos.Z
 
     -- Orbital X: Rotate in the YZ plane.
-    local orbitalX = math.rad(velocityOverLifetime.OrbitalVelocity.X * velocityOverLifetime.SpeedModifier)
+    local orbitalX = velocityOverLifetime.OrbitalVelocity.X * velocityOverLifetime.SpeedModifier
 
     if orbitalX ~= 0 then
-        local cosX = math.cos(orbitalX)
-        local sinX = math.sin(orbitalX)
-
-        rotatedY, rotatedZ =
-            rotatedY * cosX - rotatedZ * sinX,
-            rotatedY * sinX + rotatedZ * cosX
+        relativePos:RotateX(orbitalX)
     end
 
     -- Orbital Y: Rotate in the XZ plane.
-    local orbitalY = math.rad(velocityOverLifetime.OrbitalVelocity.Y * velocityOverLifetime.SpeedModifier)
+    local orbitalY = velocityOverLifetime.OrbitalVelocity.Y * velocityOverLifetime.SpeedModifier
 
     if orbitalY ~= 0 then
-        local cosY = math.cos(orbitalY)
-        local sinY = math.sin(orbitalY)
-
-        rotatedX, rotatedZ =
-            rotatedX * cosY + rotatedZ * sinY,
-            -rotatedX * sinY + rotatedZ * cosY
+        relativePos:RotateY(orbitalY)
     end
 
     -- Orbital Z: Rotate in the XY plane.
-    local orbitalZ = math.rad((velocityOverLifetime.OrbitalVelocity.Z or 0)* velocityOverLifetime.SpeedModifier)
+    local orbitalZ = (velocityOverLifetime.OrbitalVelocity.Z or 0) * velocityOverLifetime.SpeedModifier
 
     if orbitalZ ~= 0 then
-        local cosZ = math.cos(orbitalZ)
-        local sinZ = math.sin(orbitalZ)
-
-        rotatedX, rotatedY =
-            rotatedX * cosZ - rotatedY * sinZ,
-            rotatedX * sinZ + rotatedY * cosZ
+        relativePos:RotateZ(orbitalZ)
     end
-
-    local rotatedPosition = {
-        X = rotatedX,
-        Y = rotatedY,
-        Z = rotatedZ
-    }
 
     if velocityOverLifetime.Space == "Local" then
-        rotatedPosition = PaletteUtils:RotateVector3(rotatedPosition, self.Orientation)
+        relativePos:RotateZ(self.Orientation)
     end
 
-    local newX = center.X + rotatedPosition.X
-    local newY = center.Y + rotatedPosition.Y
-    local newZ = center.Z + rotatedPosition.Z
+    local orbitalVelocity = center + relativePos - particle.Position
 
-    local orbitalVelocity = {
-        X = newX - particle.Position.X,
-        Y = newY - particle.Position.Y,
-        Z = newZ - particle.Position.Z
-    }
-
-    newVelocity = PaletteUtils:AddVector3(newVelocity, orbitalVelocity)
+    newVelocity = newVelocity + orbitalVelocity
 
     -- Radial Velocity Logic
-    local dx = particle.Position.X - center.X
-    local dy = particle.Position.Y - center.Y
-    local dz = particle.Position.Z - center.Z
-    local length = math.sqrt(dx^2 + dy^2 + dz^2)
+    local radialDirection = particle.Position - center
+    local length = radialDirection:Length()
 
     if length > 0 then
-        local radialVelocity = {
-            X = dx / length * velocityOverLifetime.Radial * velocityOverLifetime.SpeedModifier,
-            Y = dy / length * velocityOverLifetime.Radial * velocityOverLifetime.SpeedModifier,
-            Z = dz / length * velocityOverLifetime.Radial * velocityOverLifetime.SpeedModifier,
-        }
-        newVelocity = PaletteUtils:AddVector3(newVelocity, radialVelocity)
+        local radialVelocity = radialDirection * (velocityOverLifetime.Radial * velocityOverLifetime.SpeedModifier / length)
+        newVelocity = newVelocity + radialVelocity
     end
 
     return newVelocity
 end
-
 
 return ParticleEmitter

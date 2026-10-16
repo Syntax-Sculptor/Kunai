@@ -1,7 +1,9 @@
 local Palette = {}
 local ParticleEmitter = include("palette_scripts.particle_emitter")
 local PaletteGradient = include("palette_scripts.palette_gradient")
-local PaletteUtils = include("palette_scripts.palette_utils")
+local Vector3 = include("palette_scripts.vector3")
+
+Palette.Vector3 = Vector3.new
 
 local initialized = false
 
@@ -41,23 +43,9 @@ local function destroyNonPersistentEmitters()
     end
 end
 
----@param x number
----@param y number
----@param z number? Default: 0
----@return Vector3
-function Palette.Vector3(x, y, z)
-    return {
-        X = x,
-        Y = y,
-        Z = z or 0
-    }
-end
-
 --- Initializes Palette using the provided `mod`. Errors if Palette has already been registered.
 ---@param mod ModReference
 function Palette:Init(mod)
-    assert(not initialized, "Palette was already initialized!")
-    
     initialized = true
 
     mod:AddCallback(ModCallbacks.MC_POST_ROOM_RENDER_ENTITIES, onPostRoomRenderEntities)
@@ -74,9 +62,9 @@ function Palette:CreateParticleEmitter(texturePath, position)
     assert(initialized, "Palette must be initialized first before calling `CreateParticleEmitter`")
 
     if not position then
-        position = {X = 0, Y = 0, Z = 0}
+        position = Vector3.Zero()
     else
-        position = PaletteUtils:CopyVector3(position)
+        position = Vector3.new(position.X, position.Y, position.Z or 0)
     end
 
     ---@cast position Vector3
@@ -102,27 +90,15 @@ function Palette:CreateParticleEmitter(texturePath, position)
         VelocityOverLifetime = {
             Enabled = false,
             Space = "Local",
-            LinearVelocity = {
-                X = 0,
-                Y = 0,
-                Z = 0,
-            },
-            OrbitalVelocity = {
-                X = 0,
-                Y = 0,
-                Z = 0,
-            },
-            OrbitalOffset = {
-                X = 0,
-                Y = 0,
-                Z = 0,
-            },
+            LinearVelocity = Vector3.Zero(),
+            OrbitalVelocity = Vector3.Zero(),
+            OrbitalOffset = Vector3.Zero(),
             Radial = 0,
             SpeedModifier = 1,
         },
         Orientation = 0,
         StartSpeed = 2,
-        StartDirection = {X = 0, Y = -1, Z = 0},
+        StartDirection = Vector3.new(0, -1, 0),
         StartSize = Vector.One,
         StartRotation = 0,
         PersistAcrossRooms = false,
