@@ -41,6 +41,18 @@ local function destroyNonPersistentEmitters()
     end
 end
 
+---@param x number
+---@param y number
+---@param z number? Default: 0
+---@return Vector3
+function Palette.Vector3(x, y, z)
+    return {
+        X = x,
+        Y = y,
+        Z = z or 0
+    }
+end
+
 --- Initializes Palette using the provided `mod`. Errors if Palette has already been registered.
 ---@param mod ModReference
 function Palette:Init(mod)
@@ -63,11 +75,7 @@ function Palette:CreateParticleEmitter(texturePath, position)
 
     if not position then
         position = {X = 0, Y = 0, Z = 0}
-    elseif not position.Z then
-        ---@cast position Vector
-        position = PaletteUtils:VectorToVector3(position)
     else
-        ---@cast position Vector3
         position = PaletteUtils:CopyVector3(position)
     end
 

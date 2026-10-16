@@ -2,25 +2,25 @@ local PaletteUtils = {}
 
 local utilsRNG = RNG(Random(), 35)
 
----@param vec Vector3
+---@param vec Vector3 | Vector
 ---@return Vector3
 function PaletteUtils:CopyVector3(vec)
     return {
         X = vec.X,
         Y = vec.Y,
-        Z = vec.Z
+        Z = vec.Z or 0
     }
 end
 
---- Adds two Vector3 objects..
----@param left Vector3
----@param right Vector3
+--- Adds two Vector3/Vector objects.
+---@param left Vector3 | Vector
+---@param right Vector3 | Vector
 ---@return Vector3
 function PaletteUtils:AddVector3(left, right)
     return {
         X = left.X + right.X,
         Y = left.Y + right.Y,
-        Z = left.Z + right.Z
+        Z = (left.Z or 0) + (right.Z or 0)
     }
 end
 
@@ -40,7 +40,7 @@ end
 ---@param left Vector3
 ---@param right number
 ---@return Vector3
-function PaletteUtils:DivideVector(left, right)
+function PaletteUtils:DivideVector3(left, right)
     assert(right ~= 0, "Attempted to divide Vector3 by 0")
 
     return {
@@ -110,16 +110,6 @@ function PaletteUtils:GetRandom(rngOrSeed)
     end
 end
 
----@param vec Vector
----@return Vector3
-function PaletteUtils:VectorToVector3(vec)
-    return {
-        X = vec.X,
-        Y = vec.Y,
-        Z = 0
-    }
-end
-
 ---@param vec Vector3
 ---@param angle number
 ---@return Vector3
@@ -135,19 +125,24 @@ function PaletteUtils:RotateVector3(vec, angle)
     return {
         X = vec.X * cos - vec.Y * sin,
         Y = vec.X * sin + vec.Y * cos,
-        Z = vec.Z
+        Z = vec.Z or 0
     }
 end
 
 ---@param vec Vector3
 function PaletteUtils:NormalizeVector3(vec)
-    local length = math.sqrt(vec.X^2 + vec.Y^2 + vec.Z^2)
+    local z = vec.Z or 0
+    local length = math.sqrt(vec.X^2 + vec.Y^2 + z^2)
 
     if length == 0 then
         return {X = 0, Y = 0, Z = 0}
     end
     
-    return PaletteUtils:DivideVector(vec, length)
+    return {
+        X = vec.X / length,
+        Y = vec.Y / length,
+        Z = z / length,
+    }
 end
 
 return PaletteUtils

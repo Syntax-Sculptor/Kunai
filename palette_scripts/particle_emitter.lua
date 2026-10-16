@@ -5,7 +5,7 @@ local PaletteGradient = include("palette_scripts.palette_gradient")
 
 ---@class ParticleEmitter This class defines a `ParticleEmitter`, which is responsible for creating particles and managing them.
 ---@field IsWorldSpace boolean Whether the emitted particles are rendered on the world space or directly onto your screen. Default: True
----@field Position Vector3 The position of the emitter. This is where all spawned particles originate from. Default: (0, 0, 0)
+---@field Position Vector | Vector3 The position of the emitter. This is where all spawned particles originate from. Default: (0, 0, 0)
 ---@field MaxParticles integer The maximum amount of particles that can be active at a given time. Default: 100
 ---@field Lifetime integer How many frames a particle exists until it's destroyed. Default: 60
 ---@field ParticleRate number How many particles are emitted over the course of one second. Default: 0
@@ -13,7 +13,7 @@ local PaletteGradient = include("palette_scripts.palette_gradient")
 ---@field StartColor KColor The initial color for spawned particles. If `ColorOverLifetime.Enabled` is set to `true`, the gradient is multiplied by this.
 ---@field VelocityOverLifetime PaletteVelocityOverLifetime Dictates how particles move over its lifespan.
 ---@field StartSpeed number The initial speed of the particle when spawned. Default: 0
----@field StartDirection Vector3 The default direction of the particle. Default: (1, 0, 0)
+---@field StartDirection Vector | Vector3 The default direction of the particle. Default: (1, 0, 0)
 ---@field StartRotation number The initial rotation for each particle. Default: 0
 ---@field Orientation number The emitter's rotation, in degrees. This is solely used to handle how particles move out from the emitter as opposed to changing the rotation of the particle's sprite. To change the sprite's actual rotation, use `StartRotation`. Default: 0
 ---@field StartSize Vector The initial scale of spawned particles. Default: (1, 1)
@@ -307,7 +307,7 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     end
 
     -- Orbital Z: Rotate in the XY plane.
-    local orbitalZ = math.rad(velocityOverLifetime.OrbitalVelocity.Z * velocityOverLifetime.SpeedModifier)
+    local orbitalZ = math.rad((velocityOverLifetime.OrbitalVelocity.Z or 0)* velocityOverLifetime.SpeedModifier)
 
     if orbitalZ ~= 0 then
         local cosZ = math.cos(orbitalZ)

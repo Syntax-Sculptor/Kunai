@@ -38,8 +38,8 @@
 ---@class PaletteVelocityOverLifetime
 ---@field Enabled boolean
 ---@field Space "Local"|"World"
----@field LinearVelocity Vector3
----@field OrbitalVelocity Vector3
----@field OrbitalOffset Vector3
+---@field LinearVelocity Vector | Vector3
+---@field OrbitalVelocity Vector | Vector3
+---@field OrbitalOffset Vector | Vector3
 ---@field Radial number
 ---@field SpeedModifier number
