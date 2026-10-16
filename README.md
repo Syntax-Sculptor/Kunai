@@ -18,13 +18,11 @@ Palette aims to fill in the gap by allowing modders to easily create and customi
 
 Installing Palette is extremely simple!
 
-1. Download the latest version of `palette.lua`[here](https://github.com/Syntax-Sculptor/Kunai/releases/latest/download/palette.lua)
+1. Download the latest version of `palette.lua`[here](https://github.com/Syntax-Sculptor/Palette/releases/latest/download/palette.lua)
 2. Save the Lua file anywhere inside your mod.
 3. In `main.lua`, load the file using `include` and initialize it:
 
 ```lua
-A formal contribution guidelines page will be written very soon.
-
 local TestMod = RegisterMod("Palette Test Mod", 1)
 local Palette = include("test-mod-scripts.palette") -- Change the directory based on where you saved Palette.
 
