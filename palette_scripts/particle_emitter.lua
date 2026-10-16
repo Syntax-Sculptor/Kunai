@@ -8,12 +8,12 @@ local PaletteGradient = include("palette_scripts.palette_gradient")
 ---@field Position Vector | Vector3 The position of the emitter. This is where all spawned particles originate from. Default: (0, 0, 0)
 ---@field MaxParticles integer The maximum amount of particles that can be active at a given time. Default: 100
 ---@field Lifetime integer How many frames a particle exists until it's destroyed. Default: 60
----@field ParticleRate number How many particles are emitted over the course of one second. Default: 0
+---@field ParticleRate number How many particles are emitted over the course of one second. Default: 5
 ---@field ColorOverLifetime PaletteColorOverLifetime Attributes relating to how the particles change color over its lifespan.
 ---@field StartColor KColor The initial color for spawned particles. If `ColorOverLifetime.Enabled` is set to `true`, the gradient is multiplied by this.
 ---@field VelocityOverLifetime PaletteVelocityOverLifetime Dictates how particles move over its lifespan.
----@field StartSpeed number The initial speed of the particle when spawned. Default: 0
----@field StartDirection Vector | Vector3 The default direction of the particle. Default: (1, 0, 0)
+---@field StartSpeed number The initial speed of the particle when spawned. Default: 2
+---@field StartDirection Vector | Vector3 The default direction of the particle. Default: (0, -1, 0)
 ---@field StartRotation number The initial rotation for each particle. Default: 0
 ---@field Orientation number The emitter's rotation, in degrees. This is solely used to handle how particles move out from the emitter as opposed to changing the rotation of the particle's sprite. To change the sprite's actual rotation, use `StartRotation`. Default: 0
 ---@field StartSize Vector The initial scale of spawned particles. Default: (1, 1)
