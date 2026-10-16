@@ -19,11 +19,11 @@ Installing Palette is extremely simple!
 
 1. Download the latest version of `palette.lua`[here](https://github.com/Syntax-Sculptor/Palette/releases/latest/download/palette.lua)
 2. Save the Lua file anywhere inside your mod.
-3. In `main.lua`, load the file using `include` and initialize it:
+3. In `main.lua`, load the file using `require` and initialize it:
 
 ```lua
 local TestMod = RegisterMod("Palette Test Mod", 1)
-local Palette = include("test-mod-scripts.palette") -- Change the directory based on where you saved Palette.
+local Palette = require("test-mod-scripts.palette") -- Change the directory based on where you saved Palette.
 
 Palette:Init(TestMod)
 ```
