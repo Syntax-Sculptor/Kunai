@@ -23,6 +23,7 @@ modules = {
     "palette_scripts.vector3": "palette_scripts/vector3.lua",
     "palette_scripts.palette_keyframes": "palette_scripts/palette_keyframes.lua",
     "palette_scripts.palette_over_lifetime": "palette_scripts/palette_over_lifetime.lua"
+    "palette_scripts.palette_shape": "palette_scripts/palette_shape.lua"
 }
 
 # Remove ---@meta tag so the final bundled Lua script isn't treated as a script only for type defs.
