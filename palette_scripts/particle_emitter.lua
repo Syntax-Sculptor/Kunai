@@ -31,8 +31,26 @@ local PaletteKeyframes = include("palette_scripts.palette_keyframes")
 ---@field private _EmissionAccumulator number
 ---@field private _IsDestroyed boolean
 ---@field private _DestroyFun fun(self: ParticleEmitter)
+---@field private _FollowingEntity Entity?
 local ParticleEmitter = {}
 ParticleEmitter.__index = ParticleEmitter
+
+--- Causes the particle emitter to follow an entity while it's alive. Pass `nil` to have the
+--- Particle Emitter stop following it.
+--- @param entity Entity?
+function ParticleEmitter:FollowEntity(entity)
+    self._FollowingEntity = entity
+end
+
+--- Returns whether the particle emitter is following an entity.
+function ParticleEmitter:IsFollowingEntity()
+    return self._FollowingEntity ~= nil and self._FollowingEntity:Exists()
+end
+
+--- Returns the entity the particle emitter is following. Returns nil if it's following no entity.
+function ParticleEmitter:GetFollowingEntity()
+    return self._FollowingEntity
+end
 
 --- Updates the ParticleEmitter's logic including its current particles. By default, this is called
 --- every frame using `MC_POST_UPDATE`. While there's typically no need to call this method as
@@ -40,6 +58,14 @@ ParticleEmitter.__index = ParticleEmitter
 function ParticleEmitter:Update()
     if self:IsDestroyed() then
         return
+    end
+
+    if self._FollowingEntity then
+        if not self._FollowingEntity:Exists() then
+            self._FollowingEntity = nil
+        else
+            self.Position = self._FollowingEntity.Position
+        end
     end
 
     self:_UpdateParticles()
@@ -133,6 +159,7 @@ function ParticleEmitter:Destroy()
     self:Clear()
     self:_DestroyFun()
 
+    self._FollowingEntity = nil
     self._ParticlePool = {}
     self._Particles = {}
     self._IsEmitting = false
