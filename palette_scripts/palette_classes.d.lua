@@ -76,4 +76,7 @@
 ---@class RotationOverLifetime
 ---@field Enabled boolean
 ---@field Mode GradientMode
----@field Keys KeyframeSegment<number>[]
+---@field Keys Keyframe<number>[]
+---@field KeysMax Keyframe<number>[]
+---@field KeysMin Keyframe<number>[]
+---@field CurveMode CurveMode

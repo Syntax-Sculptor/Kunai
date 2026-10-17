@@ -163,8 +163,8 @@ function ParticleEmitter:_Render()
             renderPos = pos2D
         end
 
-        local scaleToApply = self:_GetParticleScale(particle)
-        local scaledWidth, scaledHeight = imageWidth * scaleToApply.X, imageHeight * scaleToApply.Y
+        local scaledWidth, scaledHeight = 
+            imageWidth * particle.Scale.X, imageHeight * particle.Scale.Y
 
         local destinationQuad = DestinationQuad.NewFromRectangle(
             renderPos - Vector(scaledWidth / 2, scaledHeight / 2),
@@ -210,20 +210,9 @@ function ParticleEmitter:_UpdateParticles()
             particle.Position = particle.Position + velocity
 
             local t = particle.FrameCount / particle.Lifetime
-            local additionalRotation = 0
-
-            if self.RotationOverLifetime.Enabled then
-                additionalRotation = PaletteKeyframes.Evaluate(
-                    self.RotationOverLifetime.Keys,
-                    t,
-                    "Rotation",
-                    0,
-                    self.RotationOverLifetime.Mode,
-                    PaletteUtils.Lerp
-                )
-            end
-
-            particle.Rotation = particle.Rotation + additionalRotation
+    
+            particle.Scale = self:_GetParticleScale(particle)
+            particle.Rotation = self:_GetParticleRotation(particle)
 
             self:_UpdateParticleColor(particle)
         end
@@ -385,6 +374,47 @@ function ParticleEmitter:_GetParticleScale(particle)
 
         ---@diagnostic disable-next-line: param-type-mismatch
         return scale * PaletteUtils.Lerp(min, max, particle.LerpFactor)
+    end
+end
+
+---@param particle Particle
+function ParticleEmitter:_GetParticleRotation(particle)
+    local rotation = particle.Rotation
+
+    if not self.RotationOverLifetime.Enabled then
+        return rotation
+    end
+
+    local t = particle.FrameCount / particle.Lifetime
+    
+    if self.RotationOverLifetime.CurveMode == "Single" then
+        return rotation + PaletteKeyframes.Evaluate(
+            self.RotationOverLifetime.Keys,
+            t,
+            "Rotation",
+            0,
+            self.RotationOverLifetime.Mode,
+            PaletteUtils.Lerp
+        )
+    else
+        local min = PaletteKeyframes.Evaluate(
+            self.RotationOverLifetime.KeysMin,
+            t,
+            "Rotation",
+            0,
+            self.RotationOverLifetime.Mode,
+            PaletteUtils.Lerp
+        )
+        local max = PaletteKeyframes.Evaluate(
+            self.RotationOverLifetime.KeysMax,
+            t,
+            "Rotation",
+            0,
+            self.RotationOverLifetime.Mode,
+            PaletteUtils.Lerp
+        )
+
+        return rotation + PaletteUtils.Lerp(min, max, particle.LerpFactor)
     end
 end
 

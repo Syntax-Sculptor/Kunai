@@ -128,7 +128,16 @@ function Palette:CreateParticleEmitter(texturePath, position)
                 { Time = 0, Rotation = 0 },
                 { Time = 1, Rotation = 0}
             },
-            Mode = "Blend"
+            KeysMin = {
+                { Time = 0, Rotation = 0 },
+                { Time = 1, Rotation = 0}
+            },
+            KeysMax = {
+                { Time = 0, Rotation = 0 },
+                { Time = 1, Rotation = 0}
+            },
+            Mode = "Blend",
+            CurveMode = "Single"
         },
 
         _IsDestroyed = false,
