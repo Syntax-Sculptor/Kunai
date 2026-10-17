@@ -92,7 +92,7 @@ function PaletteUtils:GetRandomInt(min, max, rngOrSeed)
     return math.floor(PaletteUtils:GetRandom(rngOrSeed) * (max - min + 1)) + min
 end
 
----@param rangeOrFixed PaletteMinMaxValues | number
+---@param rangeOrFixed PaletteMinMaxFloat | number
 ---@param rngOrSeed RNG | integer | nil
 function PaletteUtils:SampleFloat(rangeOrFixed, rngOrSeed)
     if type(rangeOrFixed) == "number" then
@@ -102,7 +102,7 @@ function PaletteUtils:SampleFloat(rangeOrFixed, rngOrSeed)
     end
 end
 
----@param rangeOrFixed PaletteMinMaxValues | integer
+---@param rangeOrFixed PaletteMinMaxInteger | integer
 ---@param rngOrSeed RNG | integer | nil
 function PaletteUtils:SampleInteger(rangeOrFixed, rngOrSeed)
     if type(rangeOrFixed) == "number" then

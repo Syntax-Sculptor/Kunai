@@ -39,6 +39,10 @@
 ---@field Radial number
 ---@field SpeedModifier number
 
----@class PaletteMinMaxValues
+---@class PaletteMinMaxFloat
+---@field Min number
+---@field Max number
+
+---@class PaletteMinMaxInteger
 ---@field Min integer
 ---@field Max integer
