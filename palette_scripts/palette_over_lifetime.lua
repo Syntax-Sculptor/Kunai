@@ -22,18 +22,18 @@ function PaletteOverLifetime.New(defaultValue)
         Mode = "Blend",
         CurveMode = "Single",
         Keys = {
-            { Time = 0, Value = defaultValue },
-            { Time = 1, Value = defaultValue }
+            { Time = 0, Value = PaletteUtils.CopyValue(defaultValue) },
+            { Time = 1, Value = PaletteUtils.CopyValue(defaultValue) }
         },
         KeysMin = {
-            { Time = 0, Value = defaultValue },
-            { Time = 1, Value = defaultValue }
+            { Time = 0, Value = PaletteUtils.CopyValue(defaultValue) },
+            { Time = 1, Value = PaletteUtils.CopyValue(defaultValue) }
         },
         KeysMax = {
-            { Time = 0, Value = defaultValue },
-            { Time = 1, Value = defaultValue }
+            { Time = 0, Value = PaletteUtils.CopyValue(defaultValue) },
+            { Time = 1, Value = PaletteUtils.CopyValue(defaultValue) }
         },
-        DefaultValue = defaultValue
+        DefaultValue = PaletteUtils.CopyValue(defaultValue)
     }
     
     return setmetatable(self, PaletteOverLifetime)

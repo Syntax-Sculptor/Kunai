@@ -21,6 +21,24 @@ function PaletteUtils.LerpKColor(a, b, t)
     )
 end
 
+---@generic T
+---@param value T
+---@return T
+function PaletteUtils.CopyValue(value)
+    if type(value) ~= "userdata" then
+        return value
+    end
+
+    local name = getmetatable(value).__type
+
+    if name == "Vector" then
+        return Vector(value.X, value.Y)
+    elseif name == "KColor" then
+        return KColor(value.Red, value.Green, value.Blue, value.Alpha)
+    else
+        error("Couldn't copy userdata " .. name .. " (unsupported!)")
+    end
+end
 
 ---@param left KColor
 ---@param right KColor
