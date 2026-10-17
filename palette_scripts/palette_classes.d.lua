@@ -19,6 +19,7 @@
 ---@alias InterpolationMode "Blend"|"Fixed"
 ---@alias ColorOverLifetimeMode "Gradient"|"TwoGradients"
 ---@alias CurveMode "Single"|"TwoCurves"
+---@alias PaletteShapeType "Point"|"Circle"
 
 ---@class PaletteGradient
 ---@field ColorKeys PaletteGradientKey[]
@@ -65,3 +66,10 @@
 ---@field Left T
 ---@field Right T
 ---@field Alpha number
+
+---@class PaletteShapeConfig
+---@field Type PaletteShapeType
+---@field Radius number Default: 40
+---@field RadiusThickness number Default: 1
+---@field Arc number Default: 360
+---@field Size Vector3 Default: (1, 1, 1)

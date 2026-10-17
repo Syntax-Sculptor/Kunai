@@ -108,6 +108,13 @@ function Palette:CreateParticleEmitter(texturePath, position)
         DirectionSpread = 0,
         SizeOverLifetime = PaletteOverLifetime.New(Vector.One),
         RotationOverLifetime = PaletteOverLifetime.New(0),
+        Shape = {
+            Type = "Point",
+            Radius = 40,
+            RadiusThickness = 1,
+            Arc = 360,
+            Size = Vector3.One()
+        },
 
         _IsDestroyed = false,
         _EmissionAccumulator = 0,

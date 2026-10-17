@@ -3,7 +3,7 @@ local GAME_FRAMES_PER_SECOND = 30
 local PaletteUtils = include("palette_scripts.palette_utils")
 local PaletteGradient = include("palette_scripts.palette_gradient")
 local Vector3 = include("palette_scripts.vector3")
-local PaletteKeyframes = include("palette_scripts.palette_keyframes")
+local PaletteShape = include("palette_scripts.palette_shape")
 
 ---@class ParticleEmitter This class defines a `ParticleEmitter`, which is responsible for creating particles and managing them.
 ---@field IsWorldSpace boolean Whether the emitted particles are rendered on the world space or directly onto your screen. Default: True
@@ -23,6 +23,7 @@ local PaletteKeyframes = include("palette_scripts.palette_keyframes")
 ---@field DirectionSpread number How spread out the spawned particles are relative to `StartDirection`. Default: 0
 ---@field SizeOverLifetime PaletteOverLifetime Attributes relating to how particles change size over their lifespan.
 ---@field RotationOverLifetime PaletteOverLifetime Attributes relating to how particles change rotation over their lifespan.
+---@field Shape PaletteShapeConfig
 ---@field private _IsEmitting boolean Determines whether particles are being continuously emitted. Note that `ParticleEmitter:Emit` will still work even with this set to false.
 ---@field private _RenderImage Image
 ---@field private _Particles Particle[]
@@ -275,7 +276,15 @@ function ParticleEmitter:_InitializeParticle(particle)
 
     direction:Normalize():RotateZ(self.Orientation + spreadAngle)
     
-    particle.SpawnPosition = Vector3.fromVector(self.Position)
+    local spawnPosition = PaletteShape.GetSpawnPosition(
+        self.Shape,
+        Vector3.fromVector(self.Position),
+        self.Orientation
+    )
+
+    particle.SpawnPosition = spawnPosition
+    particle.Position = spawnPosition:Copy()
+    particle.SpawnPosition = spawnPosition
     particle.Position = particle.SpawnPosition:Copy()
     particle.Velocity = direction * PaletteUtils.SampleFloat(self.StartSpeed)
     particle.FrameCount = 0
