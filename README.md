@@ -56,3 +56,8 @@ Palette is currently in very early development. However, anyone is welcome to ju
     - You can also discuss it on the Palette thread inside of the Modding of Isaac Discord server.
 - If any AI tools were used (Claude, Codex, etc.), please disclose its usage in the Pull Request.
     - Vibecoded Pull Requests that have not been reviewed, tested, or understood by the you will be closed. You're expected to know your own code.
+
+## Special Thanks
+
+- Syntax-Sculptor: Programmer
+- los_sasikos: Logo artist
