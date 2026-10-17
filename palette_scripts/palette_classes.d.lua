@@ -9,6 +9,7 @@
 ---@field FrameCount integer How many update frames the particle has elapsed.
 ---@field Lifetime integer How many update frames until the particle is removed.
 ---@field Scale Vector The particle's scale multiplier. Setting it to `Vector(1, 1)` will use the sprite's original dimensions.
+---@field StartScale Vector Initial particle scale.
 ---@field Rotation number
 ---@field Color KColor
 ---@field StartColor KColor

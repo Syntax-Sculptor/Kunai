@@ -280,6 +280,7 @@ function ParticleEmitter:_InitializeParticle(particle)
     particle.Scale =  PaletteUtils.SampleVector(self.StartSize)
     particle.StartColor = PaletteUtils.SampleKColor(self.StartColor)
     particle.Color = particle.StartColor
+    particle.StartScale = PaletteUtils.SampleVector(self.StartSize)
     particle.Lifetime = PaletteUtils.SampleInteger(self.Lifetime)
     particle.Rotation = PaletteUtils.SampleFloat(self.StartRotation)
     particle.LerpFactor = PaletteUtils.GetRandom()
@@ -364,7 +365,7 @@ end
 
 ---@param particle Particle
 function ParticleEmitter:_GetParticleScale(particle)
-    local scale = particle.Scale
+    local scale = particle.StartScale
 
     if not self.SizeOverLifetime.Enabled then
         return scale
