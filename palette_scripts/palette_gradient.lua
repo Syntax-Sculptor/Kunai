@@ -17,7 +17,7 @@ local PaletteGradient = {}
 --- the range of keys, the closest endpoint color is returned
 ---@param keys PaletteGradientKey[] The color keys, sorted by timestamp.
 ---@param time number The time at which to evaluate the color.
----@param mode GradientMode? Optional. Determines how the color is evaluated. "Blend" linearly
+---@param mode InterpolationMode? Optional. Determines how the color is evaluated. "Blend" linearly
 ---                          interpolates between the two surrounding keys. "Fixed" returns the next 
 ---                          key's color (the first key with a timestamp greater than `time`), 
 ---                          producing abrupt transitions. Default: "Blend".
@@ -32,7 +32,7 @@ end
 --- keys, the closest endpoint alpha is returned
 ---@param keys PaletteAlphaKey[] The alpha keys, sorted by timestamp.
 ---@param time number The time at which to evaluate the alpha.
----@param mode GradientMode? Optional. Determines how the alpha is evaluated. "Blend" linearly
+---@param mode InterpolationMode? Optional. Determines how the alpha is evaluated. "Blend" linearly
 ---                          interpolates between the two surrounding keys. "Fixed" returns the next 
 ---                          key's alpha (the first key with a timestamp greater than `time`), 
 ---                          producing abrupt transitions. Default: "Blend".
@@ -44,7 +44,7 @@ end
 --- Returns a `KColor` from the provided `gradient` based on `time`.
 ---@param gradient PaletteGradient
 ---@param time number
----@param mode GradientMode Optional. Determines how the color is evaluated. "Blend" linearly
+---@param mode InterpolationMode Optional. Determines how the color is evaluated. "Blend" linearly
 ---                         interpolates between the two surrounding keys. "Fixed" returns the next 
 ---                         key's color (the first key with a timestamp greater than `time`), 
 ---                         producing abrupt transitions. Default: "Blend".

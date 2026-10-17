@@ -15,14 +15,14 @@
 ---@field LerpFactor number
 ---@field SpawnPosition Vector3
 
----@alias GradientMode "Blend"|"Fixed"
+---@alias InterpolationMode "Blend"|"Fixed"
 ---@alias ColorOverLifetimeMode "Gradient"|"TwoGradients"
 ---@alias CurveMode "Single"|"TwoCurves"
 
 ---@class PaletteGradient
 ---@field ColorKeys PaletteGradientKey[]
 ---@field AlphaKeys PaletteAlphaKey[]
----@field Mode GradientMode
+---@field Mode InterpolationMode
 
 ---@class PaletteColorOverLifetime
 ---@field Enabled boolean
@@ -64,19 +64,3 @@
 ---@field Left T
 ---@field Right T
 ---@field Alpha number
-
----@class SizeOverLifetime
----@field Enabled boolean
----@field Mode GradientMode
----@field Keys Keyframe<Vector>[]
----@field KeysMax Keyframe<Vector>[]
----@field KeysMin Keyframe<Vector>[]
----@field CurveMode CurveMode
-
----@class RotationOverLifetime
----@field Enabled boolean
----@field Mode GradientMode
----@field Keys Keyframe<number>[]
----@field KeysMax Keyframe<number>[]
----@field KeysMin Keyframe<number>[]
----@field CurveMode CurveMode

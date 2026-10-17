@@ -1,5 +1,6 @@
 local Palette = {}
 local ParticleEmitter = include("palette_scripts.particle_emitter")
+local PaletteOverLifetime = include("palette_scripts.palette_over_lifetime")
 local PaletteGradient = include("palette_scripts.palette_gradient")
 local Vector3 = include("palette_scripts.vector3")
 
@@ -105,40 +106,8 @@ function Palette:CreateParticleEmitter(texturePath, position)
         StartRotation = 0,
         PersistAcrossRooms = false,
         DirectionSpread = 0,
-        SizeOverLifetime = {
-            Enabled = false,
-            Keys = {
-                { Time = 0, Size = Vector.One },
-                { Time = 1, Size = Vector.One },
-            },
-            KeysMin = {
-                { Time = 0, Size = Vector.One },
-                { Time = 1, Size = Vector.One },
-            },
-            KeysMax = {
-                { Time = 0, Size = Vector.One },
-                { Time = 1, Size = Vector.One },
-            },
-            CurveMode = "Single",
-            Mode = "Blend",
-        },
-        RotationOverLifetime = {
-            Enabled = false,
-            Keys = {
-                { Time = 0, Rotation = 0 },
-                { Time = 1, Rotation = 0}
-            },
-            KeysMin = {
-                { Time = 0, Rotation = 0 },
-                { Time = 1, Rotation = 0}
-            },
-            KeysMax = {
-                { Time = 0, Rotation = 0 },
-                { Time = 1, Rotation = 0}
-            },
-            Mode = "Blend",
-            CurveMode = "Single"
-        },
+        SizeOverLifetime = PaletteOverLifetime.New(Vector.One),
+        RotationOverLifetime = PaletteOverLifetime.New(0),
 
         _IsDestroyed = false,
         _EmissionAccumulator = 0,

@@ -40,7 +40,7 @@ end
 ---@param time number
 ---@param valueName string
 ---@param defaultValue T
----@param mode GradientMode
+---@param mode InterpolationMode
 ---@param lerpFunction fun(a: T, b: T, t: number)
 function PaletteKeyframes.Evaluate(keyframes, time, valueName, defaultValue, mode, lerpFunction)
     local segment = PaletteKeyframes.FindSegment(keyframes, time, valueName, defaultValue)
