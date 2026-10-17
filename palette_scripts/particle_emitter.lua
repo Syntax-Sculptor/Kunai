@@ -271,22 +271,25 @@ end
 function ParticleEmitter:_InitializeParticle(particle)
     local direction = Vector3.fromVector(self.StartDirection)
     local spreadAngle = PaletteUtils.GetRandomFloat(-self.DirectionSpread, self.DirectionSpread)
+    local startSize = PaletteUtils.SampleVector(self.StartSize)
+
     direction:Normalize():RotateZ(self.Orientation + spreadAngle)
     
     particle.SpawnPosition = Vector3.fromVector(self.Position)
     particle.Position = particle.SpawnPosition:Copy()
     particle.Velocity = direction * PaletteUtils.SampleFloat(self.StartSpeed)
     particle.FrameCount = 0
-    particle.Scale =  PaletteUtils.SampleVector(self.StartSize)
+    particle.Scale = startSize
     particle.StartColor = PaletteUtils.SampleKColor(self.StartColor)
     particle.Color = particle.StartColor
-    particle.StartScale = PaletteUtils.SampleVector(self.StartSize)
+    particle.StartScale = startSize
     particle.Lifetime = PaletteUtils.SampleInteger(self.Lifetime)
     particle.Rotation = PaletteUtils.SampleFloat(self.StartRotation)
     particle.LerpFactor = PaletteUtils.GetRandom()
 
     -- To prevent brief visual artifacts like new particles flickering.
     self:_UpdateParticleColor(particle)
+    particle.Scale = self:_GetParticleScale(particle)
 end
 
 ---@param particle Particle
