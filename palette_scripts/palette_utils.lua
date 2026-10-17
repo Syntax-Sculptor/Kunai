@@ -128,4 +128,17 @@ function PaletteUtils:SampleVector(rangeOrFixed, rngOrSeed)
     end
 end
 
+---@param rangeOrFixed PaletteMinMaxKColor | KColor
+---@param rngOrSeed RNG | number | nil
+function PaletteUtils:SampleKColor(rangeOrFixed, rngOrSeed)
+    if type(rangeOrFixed) == "userdata" then
+        ---@diagnostic disable-next-line: undefined-field
+        return KColor(rangeOrFixed.Red, rangeOrFixed.Green, rangeOrFixed.Blue, rangeOrFixed.Alpha)
+    else
+        -- Very cheeky way to only advance seed once lol.
+        local t = PaletteUtils:GetRandom(rngOrSeed)
+        return PaletteUtils:LerpKColor(rangeOrFixed.Min, rangeOrFixed.Max, t)
+    end
+end
+
 return PaletteUtils

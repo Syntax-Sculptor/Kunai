@@ -50,3 +50,7 @@
 ---@class PaletteMinMaxVector
 ---@field Min Vector
 ---@field Max Vector
+
+---@class PaletteMinMaxKColor
+---@field Min KColor
+---@field Max KColor

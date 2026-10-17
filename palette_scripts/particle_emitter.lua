@@ -11,7 +11,7 @@ local Vector3 = include("palette_scripts.vector3")
 ---@field Lifetime PaletteMinMaxFloat | number How many frames a particle exists until it's destroyed. Default: 60
 ---@field ParticleRate number How many particles are emitted over the course of one second. Default: 5
 ---@field ColorOverLifetime PaletteColorOverLifetime Attributes relating to how the particles change color over its lifespan.
----@field StartColor KColor The initial color for spawned particles. If `ColorOverLifetime.Enabled` is set to `true`, the gradient is multiplied by this.
+---@field StartColor PaletteMinMaxKColor | KColor The initial color for spawned particles. If `ColorOverLifetime.Enabled` is set to `true`, the gradient is multiplied by this.
 ---@field VelocityOverLifetime PaletteVelocityOverLifetime Dictates how particles move over its lifespan.
 ---@field StartSpeed PaletteMinMaxFloat | number The initial speed of the particle when spawned. Default: 2
 ---@field StartDirection Vector | Vector3 The default direction of the particle. Default: (0, -1, 0)
@@ -19,6 +19,7 @@ local Vector3 = include("palette_scripts.vector3")
 ---@field Orientation number The emitter's rotation, in degrees. This is solely used to handle how particles move out from the emitter as opposed to changing the rotation of the particle's sprite. To change the sprite's actual rotation, use `StartRotation`. Default: 0
 ---@field StartSize Vector | PaletteMinMaxVector The initial scale of spawned particles. Default: (1, 1)
 ---@field PersistAcrossRooms boolean Whether the particle emitter is destroyed when leaving the current room or exiting the game. Default: false
+---@field DirectionSpread number How spread out the spawned particles are relative to `StartDirection`. Default: 0
 ---@field private _IsEmitting boolean Determines whether particles are being continuously emitted. Note that `ParticleEmitter:Emit` will still work even with this set to false.
 ---@field private _RenderImage Image
 ---@field private _Particles Particle[]
@@ -241,8 +242,8 @@ function ParticleEmitter:_InitializeParticle(particle)
     particle.Velocity = direction * PaletteUtils:SampleFloat(self.StartSpeed)
     particle.FrameCount = 0
     particle.Scale =  PaletteUtils:SampleVector(self.StartSize)
-    particle.StartColor = self.StartColor
-    particle.Color = self.StartColor
+    particle.StartColor = PaletteUtils:SampleKColor(self.StartColor)
+    particle.Color = PaletteUtils:SampleKColor(self.StartColor)
     particle.Lifetime = PaletteUtils:SampleFloat(self.Lifetime)
     particle.Rotation = PaletteUtils:SampleFloat(self.StartRotation)
     particle.ColorLerpFactor = PaletteUtils:GetRandom()
