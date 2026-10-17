@@ -21,7 +21,8 @@ local PaletteKeyframes = include("palette_scripts.palette_keyframes")
 ---@field StartSize Vector | PaletteMinMaxVector The initial scale of spawned particles. Default: (1, 1)
 ---@field PersistAcrossRooms boolean Whether the particle emitter is destroyed when leaving the current room or exiting the game. Default: false
 ---@field DirectionSpread number How spread out the spawned particles are relative to `StartDirection`. Default: 0
----@field SizeOverLifetime SizeOverLifetime Attributes relating to how the particle change size over its lifespan.
+---@field SizeOverLifetime SizeOverLifetime Attributes relating to how particles change size over their lifespan.
+---@field RotationOverLifetime RotationOverLifetime Attributes relating to how particles change rotation over their lifespan.
 ---@field private _IsEmitting boolean Determines whether particles are being continuously emitted. Note that `ParticleEmitter:Emit` will still work even with this set to false.
 ---@field private _RenderImage Image
 ---@field private _Particles Particle[]
@@ -162,21 +163,8 @@ function ParticleEmitter:_Render()
             renderPos = pos2D
         end
 
-        local t = particle.FrameCount / particle.Lifetime
-
-        local newScale = particle.Scale
-
-        if self.SizeOverLifetime.Enabled then
-            newScale = newScale * PaletteKeyframes.Evaluate(
-                self.SizeOverLifetime.Keys,
-                t,
-                "Size",
-                Vector.One,
-                self.SizeOverLifetime.Mode,
-                PaletteUtils.Lerp
-            )
-        end
-        local scaledWidth, scaledHeight = imageWidth * newScale.X, imageHeight * newScale.Y
+        local scaleToApply = self:_GetParticleScale(particle)
+        local scaledWidth, scaledHeight = imageWidth * scaleToApply.X, imageHeight * scaleToApply.Y
 
         local destinationQuad = DestinationQuad.NewFromRectangle(
             renderPos - Vector(scaledWidth / 2, scaledHeight / 2),
@@ -221,6 +209,22 @@ function ParticleEmitter:_UpdateParticles()
             local velocity = self:_GetParticleVelocity(particle)
             particle.Position = particle.Position + velocity
 
+            local t = particle.FrameCount / particle.Lifetime
+            local additionalRotation = 0
+
+            if self.RotationOverLifetime.Enabled then
+                additionalRotation = PaletteKeyframes.Evaluate(
+                    self.RotationOverLifetime.Keys,
+                    t,
+                    "Rotation",
+                    0,
+                    self.RotationOverLifetime.Mode,
+                    PaletteUtils.Lerp
+                )
+            end
+
+            particle.Rotation = particle.Rotation + additionalRotation
+
             self:_UpdateParticleColor(particle)
         end
     end
@@ -242,7 +246,7 @@ function ParticleEmitter:_UpdateParticleColor(particle)
     elseif self.ColorOverLifetime.Mode == "TwoGradients" then
         local gradientColorMin = PaletteGradient:Evaluate(self.ColorOverLifetime.GradientMin, t, self.ColorOverLifetime.GradientMin.Mode)
         local gradientColorMax = PaletteGradient:Evaluate(self.ColorOverLifetime.GradientMax, t, self.ColorOverLifetime.GradientMax.Mode)
-        local gradientColor = PaletteUtils.LerpKColor(gradientColorMin, gradientColorMax, particle.ColorLerpFactor)
+        local gradientColor = PaletteUtils.LerpKColor(gradientColorMin, gradientColorMax, particle.LerpFactor)
         particle.Color = PaletteUtils.MultiplyKColor(particle.StartColor, gradientColor)
     end
 end
@@ -262,7 +266,7 @@ function ParticleEmitter:_InitializeParticle(particle)
     particle.Color = particle.StartColor
     particle.Lifetime = PaletteUtils.SampleInteger(self.Lifetime)
     particle.Rotation = PaletteUtils.SampleFloat(self.StartRotation)
-    particle.ColorLerpFactor = PaletteUtils.GetRandom()
+    particle.LerpFactor = PaletteUtils.GetRandom()
 
     -- To prevent brief visual artifacts like new particles flickering.
     self:_UpdateParticleColor(particle)
@@ -340,6 +344,48 @@ function ParticleEmitter:_GetParticleVelocity(particle)
     end
 
     return newVelocity
+end
+
+---@param particle Particle
+function ParticleEmitter:_GetParticleScale(particle)
+    local scale = particle.Scale
+
+    if not self.SizeOverLifetime.Enabled then
+        return scale
+    end
+
+    local t = particle.FrameCount / particle.Lifetime
+    
+    if self.SizeOverLifetime.CurveMode == "Single" then
+        return scale * PaletteKeyframes.Evaluate(
+            self.SizeOverLifetime.Keys,
+            t,
+            "Size",
+            Vector.One,
+            self.SizeOverLifetime.Mode,
+            PaletteUtils.Lerp
+        )
+    else
+        local min = PaletteKeyframes.Evaluate(
+            self.SizeOverLifetime.KeysMin,
+            t,
+            "Size",
+            Vector.One,
+            self.SizeOverLifetime.Mode,
+            PaletteUtils.Lerp
+        )
+        local max = PaletteKeyframes.Evaluate(
+            self.SizeOverLifetime.KeysMax,
+            t,
+            "Size",
+            Vector.One,
+            self.SizeOverLifetime.Mode,
+            PaletteUtils.Lerp
+        )
+
+        ---@diagnostic disable-next-line: param-type-mismatch
+        return scale * PaletteUtils.Lerp(min, max, particle.LerpFactor)
+    end
 end
 
 return ParticleEmitter

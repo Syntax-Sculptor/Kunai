@@ -12,11 +12,12 @@
 ---@field Rotation number
 ---@field Color KColor
 ---@field StartColor KColor
----@field ColorLerpFactor number
+---@field LerpFactor number
 ---@field SpawnPosition Vector3
 
 ---@alias GradientMode "Blend"|"Fixed"
 ---@alias ColorOverLifetimeMode "Gradient"|"TwoGradients"
+---@alias CurveMode "Single"|"TwoCurves"
 
 ---@class PaletteGradient
 ---@field ColorKeys PaletteGradientKey[]
@@ -67,4 +68,12 @@
 ---@class SizeOverLifetime
 ---@field Enabled boolean
 ---@field Mode GradientMode
----@field Keys Keyframe<number>[]
+---@field Keys Keyframe<Vector>[]
+---@field KeysMax Keyframe<Vector>[]
+---@field KeysMin Keyframe<Vector>[]
+---@field CurveMode CurveMode
+
+---@class RotationOverLifetime
+---@field Enabled boolean
+---@field Mode GradientMode
+---@field Keys KeyframeSegment<number>[]
