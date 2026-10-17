@@ -235,7 +235,8 @@ end
 ---@param particle Particle
 function ParticleEmitter:_InitializeParticle(particle)
     local direction = Vector3.fromVector(self.StartDirection)
-    direction:Normalize():RotateZ(self.Orientation)
+    local spreadAngle = PaletteUtils:GetRandomFloat(-self.DirectionSpread, self.DirectionSpread)
+    direction:Normalize():RotateZ(self.Orientation + spreadAngle)
     
     particle.SpawnPosition = Vector3.fromVector(self.Position)
     particle.Position = particle.SpawnPosition:Copy()
