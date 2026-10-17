@@ -51,4 +51,66 @@ function PaletteUtils:GetRandom(rngOrSeed)
     end
 end
 
+--- Returns a random number between `min` (inclusive) and `max` (exclusive).
+--- 
+--- You can pass a seed to generate a random number using it. Alternatively, you can pass a `RNG`
+--- object to generate the number (which advances its seed). If you pass nothing, a random number
+--- is generated using Palette's internal RNG object.
+---@param min number
+---@param max number
+---@param rngOrSeed RNG | integer | nil
+function PaletteUtils:GetRandomFloat(min, max, rngOrSeed)
+    if min > max then
+        local old_min = min
+        local old_max = max
+        min = old_max
+        max = old_min
+    end
+
+    return min + PaletteUtils:GetRandom(rngOrSeed) * (max - min)
+end
+
+--- Returns a random integer between `min` (inclusive) and `max` (inclusive).
+--- 
+--- You can pass a seed to generate a random integer using it. Alternatively, you can pass a `RNG`
+--- object to generate the integer (which advances its seed). If you pass nothing, a random integer
+--- is generated using Palette's internal RNG object.
+---@param min integer
+---@param max integer
+---@param rngOrSeed RNG | integer | nil
+---@return number
+function PaletteUtils:GetRandomInt(min, max, rngOrSeed)
+    assert(min % 1 == 0 and max % 1 == 0, "GetRandomInt requires integer bounds")
+
+    if min > max then
+        local old_min = min
+        local old_max = max
+        min = old_max
+        max = old_min
+    end
+
+    return math.floor(PaletteUtils:GetRandom(rngOrSeed) * (max - min + 1)) + min
+end
+
+---@param rangeOrFixed PaletteMinMaxValues | number
+---@param rngOrSeed RNG | integer | nil
+function PaletteUtils:SampleFloat(rangeOrFixed, rngOrSeed)
+    if type(rangeOrFixed) == "number" then
+        return rangeOrFixed
+    else
+        return PaletteUtils:GetRandomFloat(rangeOrFixed.Min, rangeOrFixed.Max, rngOrSeed)
+    end
+end
+
+---@param rangeOrFixed PaletteMinMaxValues | integer
+---@param rngOrSeed RNG | integer | nil
+function PaletteUtils:SampleInteger(rangeOrFixed, rngOrSeed)
+    if type(rangeOrFixed) == "number" then
+        return rangeOrFixed
+    else
+        return PaletteUtils:GetRandomInt(rangeOrFixed.Min, rangeOrFixed.Max, rngOrSeed)
+    end
+end
+
+
 return PaletteUtils

@@ -38,3 +38,7 @@
 ---@field OrbitalOffset Vector | Vector3
 ---@field Radial number
 ---@field SpeedModifier number
+
+---@class PaletteMinMaxValues
+---@field Min integer
+---@field Max integer
