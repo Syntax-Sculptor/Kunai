@@ -63,3 +63,8 @@
 ---@field Left T
 ---@field Right T
 ---@field Alpha number
+
+---@class SizeOverLifetime
+---@field Enabled boolean
+---@field Mode GradientMode
+---@field Keys Keyframe<number>[]

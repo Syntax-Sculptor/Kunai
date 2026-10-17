@@ -3,6 +3,7 @@ local GAME_FRAMES_PER_SECOND = 30
 local PaletteUtils = include("palette_scripts.palette_utils")
 local PaletteGradient = include("palette_scripts.palette_gradient")
 local Vector3 = include("palette_scripts.vector3")
+local PaletteKeyframes = include("palette_scripts.palette_keyframes")
 
 ---@class ParticleEmitter This class defines a `ParticleEmitter`, which is responsible for creating particles and managing them.
 ---@field IsWorldSpace boolean Whether the emitted particles are rendered on the world space or directly onto your screen. Default: True
@@ -20,6 +21,7 @@ local Vector3 = include("palette_scripts.vector3")
 ---@field StartSize Vector | PaletteMinMaxVector The initial scale of spawned particles. Default: (1, 1)
 ---@field PersistAcrossRooms boolean Whether the particle emitter is destroyed when leaving the current room or exiting the game. Default: false
 ---@field DirectionSpread number How spread out the spawned particles are relative to `StartDirection`. Default: 0
+---@field SizeOverLifetime SizeOverLifetime Attributes relating to how the particle change size over its lifespan.
 ---@field private _IsEmitting boolean Determines whether particles are being continuously emitted. Note that `ParticleEmitter:Emit` will still work even with this set to false.
 ---@field private _RenderImage Image
 ---@field private _Particles Particle[]
@@ -160,8 +162,21 @@ function ParticleEmitter:_Render()
             renderPos = pos2D
         end
 
-        local scaledWidth, scaledHeight =
-            imageWidth * particle.Scale.X, imageHeight * particle.Scale.Y
+        local t = particle.FrameCount / particle.Lifetime
+
+        local newScale = particle.Scale
+
+        if self.SizeOverLifetime.Enabled then
+            newScale = newScale * PaletteKeyframes.Evaluate(
+                self.SizeOverLifetime.Keys,
+                t,
+                "Size",
+                Vector.One,
+                self.SizeOverLifetime.Mode,
+                PaletteUtils.Lerp
+            )
+        end
+        local scaledWidth, scaledHeight = imageWidth * newScale.X, imageHeight * newScale.Y
 
         local destinationQuad = DestinationQuad.NewFromRectangle(
             renderPos - Vector(scaledWidth / 2, scaledHeight / 2),
