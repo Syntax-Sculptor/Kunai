@@ -223,31 +223,31 @@ function ParticleEmitter:_UpdateParticleColor(particle)
 
     if self.ColorOverLifetime.Mode == "Gradient" then
         local gradientColor = PaletteGradient:Evaluate(self.ColorOverLifetime.Gradient, t, self.ColorOverLifetime.Gradient.Mode)
-        particle.Color = PaletteUtils:MultiplyKColor(particle.StartColor, gradientColor)
+        particle.Color = PaletteUtils.MultiplyKColor(particle.StartColor, gradientColor)
     elseif self.ColorOverLifetime.Mode == "TwoGradients" then
         local gradientColorMin = PaletteGradient:Evaluate(self.ColorOverLifetime.GradientMin, t, self.ColorOverLifetime.GradientMin.Mode)
         local gradientColorMax = PaletteGradient:Evaluate(self.ColorOverLifetime.GradientMax, t, self.ColorOverLifetime.GradientMax.Mode)
-        local gradientColor = PaletteUtils:LerpKColor(gradientColorMin, gradientColorMax, particle.ColorLerpFactor)
-        particle.Color = PaletteUtils:MultiplyKColor(particle.StartColor, gradientColor)
+        local gradientColor = PaletteUtils.LerpKColor(gradientColorMin, gradientColorMax, particle.ColorLerpFactor)
+        particle.Color = PaletteUtils.MultiplyKColor(particle.StartColor, gradientColor)
     end
 end
 
 ---@param particle Particle
 function ParticleEmitter:_InitializeParticle(particle)
     local direction = Vector3.fromVector(self.StartDirection)
-    local spreadAngle = PaletteUtils:GetRandomFloat(-self.DirectionSpread, self.DirectionSpread)
+    local spreadAngle = PaletteUtils.GetRandomFloat(-self.DirectionSpread, self.DirectionSpread)
     direction:Normalize():RotateZ(self.Orientation + spreadAngle)
     
     particle.SpawnPosition = Vector3.fromVector(self.Position)
     particle.Position = particle.SpawnPosition:Copy()
-    particle.Velocity = direction * PaletteUtils:SampleFloat(self.StartSpeed)
+    particle.Velocity = direction * PaletteUtils.SampleFloat(self.StartSpeed)
     particle.FrameCount = 0
-    particle.Scale =  PaletteUtils:SampleVector(self.StartSize)
-    particle.StartColor = PaletteUtils:SampleKColor(self.StartColor)
+    particle.Scale =  PaletteUtils.SampleVector(self.StartSize)
+    particle.StartColor = PaletteUtils.SampleKColor(self.StartColor)
     particle.Color = particle.StartColor
-    particle.Lifetime = PaletteUtils:SampleInteger(self.Lifetime)
-    particle.Rotation = PaletteUtils:SampleFloat(self.StartRotation)
-    particle.ColorLerpFactor = PaletteUtils:GetRandom()
+    particle.Lifetime = PaletteUtils.SampleInteger(self.Lifetime)
+    particle.Rotation = PaletteUtils.SampleFloat(self.StartRotation)
+    particle.ColorLerpFactor = PaletteUtils.GetRandom()
 
     -- To prevent brief visual artifacts like new particles flickering.
     self:_UpdateParticleColor(particle)

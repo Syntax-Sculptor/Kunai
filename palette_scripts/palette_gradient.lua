@@ -1,4 +1,5 @@
 local PaletteUtils = include("palette_scripts.palette_utils")
+local PaletteKeyframes = include("palette_scripts.palette_keyframes")
 
 ---@class PaletteGradientKey
 ---@field Time number
@@ -22,31 +23,7 @@ local PaletteGradient = {}
 ---                          producing abrupt transitions. Default: "Blend".
 function PaletteGradient:EvaluateColor(keys, time, mode)
     mode = mode or "Blend"
-    
-    if #keys == 0 then
-        return KColor.White
-    elseif time <= keys[1].Time then
-        return keys[1].Color
-    elseif time >= keys[#keys].Time then
-        return keys[#keys].Color
-    end
-    
-    local min, max
-
-    for i = 2, #keys do
-        if keys[i].Time > time then
-            if mode == "Fixed" then
-                return keys[i - 1].Color
-            end
-
-            min = keys[i - 1]
-            max = keys[i]
-            break
-        end
-    end
-
-    local t = (time - min.Time) / (max.Time - min.Time)
-    return PaletteUtils:LerpKColor(min.Color, max.Color, t)
+    return PaletteKeyframes.Evaluate(keys, time, "Color", KColor.White, mode, PaletteUtils.LerpKColor)
 end
 
 --- Evaluates a color from a list of alpha keys at the specified `time`.
@@ -61,31 +38,7 @@ end
 ---                          producing abrupt transitions. Default: "Blend".
 function PaletteGradient:EvaluateAlpha(keys, time, mode)
     mode = mode or "Blend"
-
-    if #keys == 0 then
-        return 1
-    elseif time <= keys[1].Time then
-        return keys[1].Alpha
-    elseif time >= keys[#keys].Time then
-        return keys[#keys].Alpha
-    end
-    
-    local min, max
-
-    for i = 2, #keys do
-        if keys[i].Time > time then
-            if mode == "Fixed" then
-                return keys[i - 1].Alpha
-            end
-
-            min = keys[i - 1]
-            max = keys[i]
-            break
-        end
-    end
-
-    local t = (time - min.Time) / (max.Time - min.Time)
-    return PaletteUtils:Lerp(min.Alpha, max.Alpha, t)
+    return PaletteKeyframes.Evaluate(keys, time, "Alpha", 1, mode, PaletteUtils.Lerp)
 end
 
 --- Returns a `KColor` from the provided `gradient` based on `time`.

@@ -5,26 +5,26 @@ local utilsRNG = RNG(Random(), 35)
 ---@param a number
 ---@param b number
 ---@param t number
-function PaletteUtils:Lerp(a, b, t)
+function PaletteUtils.Lerp(a, b, t)
     return a + (b - a) * t
 end
 
 ---@param a KColor
 ---@param b KColor
 ---@param t number
-function PaletteUtils:LerpKColor(a, b, t)
+function PaletteUtils.LerpKColor(a, b, t)
     return KColor(
-        PaletteUtils:Lerp(a.Red, b.Red, t),
-        PaletteUtils:Lerp(a.Green, b.Green, t),
-        PaletteUtils:Lerp(a.Blue, b.Blue, t),
-        PaletteUtils:Lerp(a.Alpha, b.Alpha, t)
+        PaletteUtils.Lerp(a.Red, b.Red, t),
+        PaletteUtils.Lerp(a.Green, b.Green, t),
+        PaletteUtils.Lerp(a.Blue, b.Blue, t),
+        PaletteUtils.Lerp(a.Alpha, b.Alpha, t)
     )
 end
 
 
 ---@param left KColor
 ---@param right KColor
-function PaletteUtils:MultiplyKColor(left, right)
+function PaletteUtils.MultiplyKColor(left, right)
     return KColor(
         left.Red * right.Red,
         left.Green * right.Green,
@@ -39,7 +39,7 @@ end
 --- object to generate the number (which advances its seed). If you pass nothing, a random number
 --- is generated using Palette's internal RNG object.
 ---@param rngOrSeed RNG | integer | nil
-function PaletteUtils:GetRandom(rngOrSeed)
+function PaletteUtils.GetRandom(rngOrSeed)
     if type(rngOrSeed) == "number" then
         local rng = RNG(rngOrSeed, 35)
         return rng:RandomFloat()
@@ -59,7 +59,7 @@ end
 ---@param min number
 ---@param max number
 ---@param rngOrSeed RNG | integer | nil
-function PaletteUtils:GetRandomFloat(min, max, rngOrSeed)
+function PaletteUtils.GetRandomFloat(min, max, rngOrSeed)
     if min > max then
         local old_min = min
         local old_max = max
@@ -67,7 +67,7 @@ function PaletteUtils:GetRandomFloat(min, max, rngOrSeed)
         max = old_min
     end
 
-    return min + PaletteUtils:GetRandom(rngOrSeed) * (max - min)
+    return min + PaletteUtils.GetRandom(rngOrSeed) * (max - min)
 end
 
 --- Returns a random integer between `min` (inclusive) and `max` (inclusive).
@@ -79,7 +79,7 @@ end
 ---@param max integer
 ---@param rngOrSeed RNG | integer | nil
 ---@return number
-function PaletteUtils:GetRandomInt(min, max, rngOrSeed)
+function PaletteUtils.GetRandomInt(min, max, rngOrSeed)
     assert(min % 1 == 0 and max % 1 == 0, "GetRandomInt requires integer bounds")
 
     if min > max then
@@ -89,55 +89,55 @@ function PaletteUtils:GetRandomInt(min, max, rngOrSeed)
         max = old_min
     end
 
-    return math.floor(PaletteUtils:GetRandom(rngOrSeed) * (max - min + 1)) + min
+    return math.floor(PaletteUtils.GetRandom(rngOrSeed) * (max - min + 1)) + min
 end
 
 ---@param rangeOrFixed PaletteMinMaxFloat | number
 ---@param rngOrSeed RNG | integer | nil
-function PaletteUtils:SampleFloat(rangeOrFixed, rngOrSeed)
+function PaletteUtils.SampleFloat(rangeOrFixed, rngOrSeed)
     if type(rangeOrFixed) == "number" then
         return rangeOrFixed
     else
-        return PaletteUtils:GetRandomFloat(rangeOrFixed.Min, rangeOrFixed.Max, rngOrSeed)
+        return PaletteUtils.GetRandomFloat(rangeOrFixed.Min, rangeOrFixed.Max, rngOrSeed)
     end
 end
 
 ---@param rangeOrFixed PaletteMinMaxInteger | integer
 ---@param rngOrSeed RNG | integer | nil
-function PaletteUtils:SampleInteger(rangeOrFixed, rngOrSeed)
+function PaletteUtils.SampleInteger(rangeOrFixed, rngOrSeed)
     if type(rangeOrFixed) == "number" then
         return rangeOrFixed
     else
-        return PaletteUtils:GetRandomInt(rangeOrFixed.Min, rangeOrFixed.Max, rngOrSeed)
+        return PaletteUtils.GetRandomInt(rangeOrFixed.Min, rangeOrFixed.Max, rngOrSeed)
     end
 end
 
 ---@param rangeOrFixed PaletteMinMaxVector | Vector
 ---@param rngOrSeed RNG | number | nil
-function PaletteUtils:SampleVector(rangeOrFixed, rngOrSeed)
+function PaletteUtils.SampleVector(rangeOrFixed, rngOrSeed)
     if type(rangeOrFixed) == "userdata" then
         ---@diagnostic disable-next-line: undefined-field
         return Vector(rangeOrFixed.X, rangeOrFixed.Y)
     else
         -- Very cheeky way to only advance seed once lol.
-        local t = PaletteUtils:GetRandom(rngOrSeed)
+        local t = PaletteUtils.GetRandom(rngOrSeed)
         return Vector(
-            PaletteUtils:Lerp(rangeOrFixed.Min.X, rangeOrFixed.Max.X, t),
-            PaletteUtils:Lerp(rangeOrFixed.Min.Y, rangeOrFixed.Max.Y, t)
+            PaletteUtils.Lerp(rangeOrFixed.Min.X, rangeOrFixed.Max.X, t),
+            PaletteUtils.Lerp(rangeOrFixed.Min.Y, rangeOrFixed.Max.Y, t)
         )
     end
 end
 
 ---@param rangeOrFixed PaletteMinMaxKColor | KColor
 ---@param rngOrSeed RNG | number | nil
-function PaletteUtils:SampleKColor(rangeOrFixed, rngOrSeed)
+function PaletteUtils.SampleKColor(rangeOrFixed, rngOrSeed)
     if type(rangeOrFixed) == "userdata" then
         ---@diagnostic disable-next-line: undefined-field
         return KColor(rangeOrFixed.Red, rangeOrFixed.Green, rangeOrFixed.Blue, rangeOrFixed.Alpha)
     else
         -- Very cheeky way to only advance seed once lol.
-        local t = PaletteUtils:GetRandom(rngOrSeed)
-        return PaletteUtils:LerpKColor(rangeOrFixed.Min, rangeOrFixed.Max, t)
+        local t = PaletteUtils.GetRandom(rngOrSeed)
+        return PaletteUtils.LerpKColor(rangeOrFixed.Min, rangeOrFixed.Max, t)
     end
 end
 

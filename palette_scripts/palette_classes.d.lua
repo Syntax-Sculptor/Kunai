@@ -54,3 +54,12 @@
 ---@class PaletteMinMaxKColor
 ---@field Min KColor
 ---@field Max KColor
+
+---@class Keyframe<T>
+---@field Time number
+---@field Value T
+
+---@class KeyframeSegment<T>
+---@field Left T
+---@field Right T
+---@field Alpha number
