@@ -112,5 +112,20 @@ function PaletteUtils:SampleInteger(rangeOrFixed, rngOrSeed)
     end
 end
 
+---@param rangeOrFixed PaletteMinMaxVector | Vector
+---@param rngOrSeed RNG | number | nil
+function PaletteUtils:SampleVector(rangeOrFixed, rngOrSeed)
+    if type(rangeOrFixed) == "userdata" then
+        ---@diagnostic disable-next-line: undefined-field
+        return Vector(rangeOrFixed.X, rangeOrFixed.Y)
+    else
+        -- Very cheeky way to only advance seed once lol.
+        local t = PaletteUtils:GetRandom(rngOrSeed)
+        return Vector(
+            PaletteUtils:Lerp(rangeOrFixed.Min.X, rangeOrFixed.Max.X, t),
+            PaletteUtils:Lerp(rangeOrFixed.Min.Y, rangeOrFixed.Max.Y, t)
+        )
+    end
+end
 
 return PaletteUtils

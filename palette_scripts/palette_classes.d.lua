@@ -46,3 +46,7 @@
 ---@class PaletteMinMaxInteger
 ---@field Min integer
 ---@field Max integer
+
+---@class PaletteMinMaxVector
+---@field Min Vector
+---@field Max Vector

@@ -15,9 +15,9 @@ local Vector3 = include("palette_scripts.vector3")
 ---@field VelocityOverLifetime PaletteVelocityOverLifetime Dictates how particles move over its lifespan.
 ---@field StartSpeed PaletteMinMaxFloat | number The initial speed of the particle when spawned. Default: 2
 ---@field StartDirection Vector | Vector3 The default direction of the particle. Default: (0, -1, 0)
----@field StartRotation number The initial rotation for each particle. Default: 0
+---@field StartRotation number | PaletteMinMaxFloat The initial rotation for each particle. Default: 0
 ---@field Orientation number The emitter's rotation, in degrees. This is solely used to handle how particles move out from the emitter as opposed to changing the rotation of the particle's sprite. To change the sprite's actual rotation, use `StartRotation`. Default: 0
----@field StartSize Vector The initial scale of spawned particles. Default: (1, 1)
+---@field StartSize Vector | PaletteMinMaxVector The initial scale of spawned particles. Default: (1, 1)
 ---@field PersistAcrossRooms boolean Whether the particle emitter is destroyed when leaving the current room or exiting the game. Default: false
 ---@field private _IsEmitting boolean Determines whether particles are being continuously emitted. Note that `ParticleEmitter:Emit` will still work even with this set to false.
 ---@field private _RenderImage Image
@@ -240,11 +240,11 @@ function ParticleEmitter:_InitializeParticle(particle)
     particle.Position = particle.SpawnPosition:Copy()
     particle.Velocity = direction * PaletteUtils:SampleFloat(self.StartSpeed)
     particle.FrameCount = 0
-    particle.Scale = Vector(self.StartSize.X, self.StartSize.Y)
+    particle.Scale =  PaletteUtils:SampleVector(self.StartSize)
     particle.StartColor = self.StartColor
     particle.Color = self.StartColor
     particle.Lifetime = PaletteUtils:SampleFloat(self.Lifetime)
-    particle.Rotation = self.StartRotation
+    particle.Rotation = PaletteUtils:SampleFloat(self.StartRotation)
     particle.ColorLerpFactor = PaletteUtils:GetRandom()
 
     -- To prevent brief visual artifacts like new particles flickering.
