@@ -8,7 +8,7 @@ local Vector3 = include("palette_scripts.vector3")
 ---@field IsWorldSpace boolean Whether the emitted particles are rendered on the world space or directly onto your screen. Default: True
 ---@field Position Vector | Vector3 The position of the emitter. This is where all spawned particles originate from. Default: (0, 0, 0)
 ---@field MaxParticles integer The maximum amount of particles that can be active at a given time. Default: 100
----@field Lifetime PaletteMinMaxFloat | number How many frames a particle exists until it's destroyed. Default: 60
+---@field Lifetime PaletteMinMaxInteger | number How many frames a particle exists until it's destroyed. Default: 60
 ---@field ParticleRate number How many particles are emitted over the course of one second. Default: 5
 ---@field ColorOverLifetime PaletteColorOverLifetime Attributes relating to how the particles change color over its lifespan.
 ---@field StartColor PaletteMinMaxKColor | KColor The initial color for spawned particles. If `ColorOverLifetime.Enabled` is set to `true`, the gradient is multiplied by this.
@@ -244,8 +244,8 @@ function ParticleEmitter:_InitializeParticle(particle)
     particle.FrameCount = 0
     particle.Scale =  PaletteUtils:SampleVector(self.StartSize)
     particle.StartColor = PaletteUtils:SampleKColor(self.StartColor)
-    particle.Color = PaletteUtils:SampleKColor(self.StartColor)
-    particle.Lifetime = PaletteUtils:SampleFloat(self.Lifetime)
+    particle.Color = particle.StartColor
+    particle.Lifetime = PaletteUtils:SampleInteger(self.Lifetime)
     particle.Rotation = PaletteUtils:SampleFloat(self.StartRotation)
     particle.ColorLerpFactor = PaletteUtils:GetRandom()
 

@@ -46,6 +46,8 @@ end
 --- Initializes Palette using the provided `mod`. Errors if Palette has already been registered.
 ---@param mod ModReference
 function Palette:Init(mod)
+    assert(not initialized, "Palette has already been initialized")
+    
     initialized = true
 
     mod:AddCallback(ModCallbacks.MC_POST_ROOM_RENDER_ENTITIES, onPostRoomRenderEntities)
@@ -103,7 +105,7 @@ function Palette:CreateParticleEmitter(texturePath, position)
         StartRotation = 0,
         PersistAcrossRooms = false,
         DirectionSpread = 0,
-        
+
         _IsDestroyed = false,
         _EmissionAccumulator = 0,
         _IsEmitting = true,
