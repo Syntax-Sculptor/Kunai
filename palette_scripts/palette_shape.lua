@@ -23,6 +23,23 @@ function PaletteShape.GetSpawnPosition(shape, emitterPosition, orientation)
             chosenRadius * math.sin(angle),
             0
         )
+    elseif shape.Type == "Rectangle" then
+        local randX = PaletteUtils.GetRandomFloat(-shape.Size.X / 2, shape.Size.X / 2)
+        local randY = PaletteUtils.GetRandomFloat(-shape.Size.Y / 2, shape.Size.Y / 2)
+
+        local offset = Vector3.new(randX, randY, 0)
+        offset:RotateZ(orientation)
+
+        return emitterPosition + offset
+    elseif shape.Type == "Box" then
+        local randX = PaletteUtils.GetRandomFloat(-shape.Size.X / 2, shape.Size.X / 2)
+        local randY = PaletteUtils.GetRandomFloat(-shape.Size.Y / 2, shape.Size.Y / 2)
+        local randZ = PaletteUtils.GetRandomFloat(-shape.Size.Z / 2, shape.Size.Z / 2)
+
+        local offset = Vector3.new(randX, randY, randZ)
+        offset:RotateZ(orientation)
+
+        return emitterPosition + offset
     else
         error("Unsupported particle shape: " .. shape.Type)
     end
