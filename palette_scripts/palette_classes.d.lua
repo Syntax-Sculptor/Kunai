@@ -20,6 +20,7 @@
 ---@alias ColorOverLifetimeMode "Gradient"|"TwoGradients"
 ---@alias CurveMode "Single"|"TwoCurves"
 ---@alias PaletteShapeType "Point"|"Circle"|"Rectangle"|"Box"
+---@alias DirectionMode "Radial"|"Default"
 
 ---@class PaletteGradient
 ---@field ColorKeys PaletteGradientKey[]
@@ -73,3 +74,4 @@
 ---@field RadiusThickness number Default: 1
 ---@field Arc number Default: 360
 ---@field Size Vector3 Default: (1, 1, 1)
+---@field DirectionMode DirectionMode Default: "Default"

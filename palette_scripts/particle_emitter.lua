@@ -270,23 +270,35 @@ end
 
 ---@param particle Particle
 function ParticleEmitter:_InitializeParticle(particle)
-    local direction = Vector3.fromVector(self.StartDirection)
-    local spreadAngle = PaletteUtils.GetRandomFloat(-self.DirectionSpread, self.DirectionSpread)
     local startSize = PaletteUtils.SampleVector(self.StartSize)
-
-    direction:Normalize():RotateZ(self.Orientation + spreadAngle)
-    
+    local emitterPosition = Vector3.fromVector(self.Position)
     local spawnPosition = PaletteShape.GetSpawnPosition(
         self.Shape,
-        Vector3.fromVector(self.Position),
+        emitterPosition,
         self.Orientation
     )
+
+    local defaultDirection = Vector3.fromVector(self.StartDirection)
+    defaultDirection:Normalize():RotateZ(self.Orientation)
+
+    local finalDirection = PaletteShape.GetDirection(
+        self.Shape,
+        emitterPosition,
+        spawnPosition,
+        defaultDirection
+    )
+    local spreadAngle = PaletteUtils.GetRandomFloat(
+        -self.DirectionSpread,
+        self.DirectionSpread
+    )
+
+    finalDirection:RotateZ(spreadAngle)
 
     particle.SpawnPosition = spawnPosition
     particle.Position = spawnPosition:Copy()
     particle.SpawnPosition = spawnPosition
     particle.Position = particle.SpawnPosition:Copy()
-    particle.Velocity = direction * PaletteUtils.SampleFloat(self.StartSpeed)
+    particle.Velocity = finalDirection * PaletteUtils.SampleFloat(self.StartSpeed)
     particle.FrameCount = 0
     particle.Scale = startSize
     particle.StartColor = PaletteUtils.SampleKColor(self.StartColor)

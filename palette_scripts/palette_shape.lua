@@ -45,4 +45,26 @@ function PaletteShape.GetSpawnPosition(shape, emitterPosition, orientation)
     end
 end
 
+
+---@param shape PaletteShapeConfig
+---@param emitterPosition Vector3
+---@param startPosition Vector3
+---@param startDirection Vector3
+---@return Vector3
+function PaletteShape.GetDirection(shape, emitterPosition, startPosition, startDirection)
+    if shape.DirectionMode == "Default" then
+        return startDirection:Copy()
+    elseif shape.DirectionMode == "Radial" then
+        local vec = startPosition - emitterPosition
+
+        if vec:LengthSquared() == 0 then
+            return startDirection:Copy()
+        end
+
+        return vec:Normalize()
+    else
+        error("Unsupported shape direction mode: " .. tostring(shape.DirectionMode))
+    end
+end
+
 return PaletteShape

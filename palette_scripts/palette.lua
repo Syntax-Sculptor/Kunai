@@ -113,7 +113,8 @@ function Palette:CreateParticleEmitter(texturePath, position)
             Radius = 40,
             RadiusThickness = 1,
             Arc = 360,
-            Size = Vector3.One()
+            Size = Vector3.One(),
+            DirectionMode = "Default",
         },
 
         _IsDestroyed = false,
