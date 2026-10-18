@@ -40,6 +40,19 @@ function PaletteShape.GetSpawnPosition(shape, emitterPosition, orientation)
         offset:RotateZ(orientation)
 
         return emitterPosition + offset
+    elseif shape.Type == "Sphere" then
+        -- Inverse Transform Sampling... again!
+        -- https://corysimon.github.io/articles/uniformdistn-on-sphere/ Thank this goat
+        local u, v, w = PaletteUtils.GetRandom(), PaletteUtils.GetRandom(), PaletteUtils.GetRandom()
+
+        local minRadius = shape.Radius * (1 - shape.RadiusThickness)
+        local chosenRadius = (minRadius^3 + u * (shape.Radius^3 - minRadius^3)) ^ (1/3)
+        local angle = 2 * math.pi * w
+        local z = 2 * v - 1
+        local x = math.sqrt(1 - z^2) * math.cos(angle)
+        local y = math.sqrt(1 - z^2) * math.sin(angle)
+
+        return emitterPosition + Vector3.new(x, y, z) * chosenRadius
     else
         error("Unsupported particle shape: " .. shape.Type)
     end

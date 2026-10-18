@@ -19,7 +19,7 @@
 ---@alias InterpolationMode "Blend"|"Fixed"
 ---@alias ColorOverLifetimeMode "Gradient"|"TwoGradients"
 ---@alias CurveMode "Single"|"TwoCurves"
----@alias PaletteShapeType "Point"|"Circle"|"Rectangle"|"Box"
+---@alias PaletteShapeType "Point"|"Circle"|"Rectangle"|"Box"|"Sphere"
 ---@alias DirectionMode "Radial"|"Default"
 
 ---@class PaletteGradient
